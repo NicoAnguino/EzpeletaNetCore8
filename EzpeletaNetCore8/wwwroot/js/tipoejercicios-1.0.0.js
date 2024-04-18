@@ -107,6 +107,8 @@ function GuardarRegistro(){
     //GUARDAMOS EN UNA VARIABLE LO ESCRITO EN EL INPUT DESCRIPCION
     let tipoEjercicioID = document.getElementById("TipoEjercicioID").value;
     let descripcion = document.getElementById("descripcion").value;
+    //POR UN LADO PROGRAMAR VERIFICACIONES DE DATOS EN EL FRONT CUANDO SON DE INGRESO DE VALORES Y NO SE NECESITA VERIFICAR EN BASES DE DATOS
+    //LUEGO POR OTRO LADO HACER VERIFICACIONES DE DATOS EN EL BACK, SI EXISTE EL ELEMENTO SI NECESITAMOS LA BASE DE DATOS.
     console.log(descripcion);
     $.ajax({
         // la URL para la petición
@@ -122,7 +124,9 @@ function GuardarRegistro(){
         // la respuesta es pasada como argumento a la función
         success: function (resultado) {
 
-            
+            if(resultado != ""){
+                alert(resultado);
+            }
             ListadoTipoEjercicios();
         },
 

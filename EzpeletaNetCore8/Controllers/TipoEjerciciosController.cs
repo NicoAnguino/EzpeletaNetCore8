@@ -51,8 +51,11 @@ public class TipoEjerciciosController : Controller
         //     //INGRESA SI ESCRIBIO SI O SI 
         // }
 
+        string resultado = "";
+
         if (!String.IsNullOrEmpty(descripcion))
         {
+            descripcion = descripcion.ToUpper();
             //INGRESA SI ESCRIBIO SI O SI 
 
             //2- VERIFICAR SI ESTA EDITANDO O CREANDO NUEVO REGISTRO
@@ -67,26 +70,43 @@ public class TipoEjerciciosController : Controller
                     //4- GUARDAR EL TIPO DE EJERCICIO
                     var tipoEjercicio = new TipoEjercicio
                     {
-                        Descripcion = descripcion.ToUpper()
+                        Descripcion = descripcion
                     };
                     _context.Add(tipoEjercicio);
                     _context.SaveChanges();
+                }
+                else
+                {
+                    resultado = "YA EXISTE UN REGISTRO CON LA MISMA DESCRIPCIÓN";
                 }
             }
             else
             {
                 //QUIERE DECIR QUE VAMOS A EDITAR EL REGISTRO
                 var tipoEjercicioEditar = _context.TipoEjercicios.Where(t => t.TipoEjercicioID == tipoEjercicioID).SingleOrDefault();
-                if(tipoEjercicioEditar != null){
-                    //QUIERE DECIR QUE EL ELEMENTO EXISTE Y ES CORRECTO ENTONCES CONTINUAMOS CON EL EDITAR
-                    tipoEjercicioEditar.Descripcion = descripcion.ToUpper();
-                    _context.SaveChanges();
+                if (tipoEjercicioEditar != null)
+                {
+                    //BUSCAMOS EN LA TABLA SI EXISTE UN REGISTRO CON EL MISMO NOMBRE PERO QUE EL ID SEA DISTINTO AL QUE ESTAMOS EDITANDO
+                    var existeTipoEjercicio = _context.TipoEjercicios.Where(t => t.Descripcion == descripcion && t.TipoEjercicioID != tipoEjercicioID).Count();
+                    if (existeTipoEjercicio == 0)
+                    {
+                        //QUIERE DECIR QUE EL ELEMENTO EXISTE Y ES CORRECTO ENTONCES CONTINUAMOS CON EL EDITAR
+                        tipoEjercicioEditar.Descripcion = descripcion;
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        resultado = "YA EXISTE UN REGISTRO CON LA MISMA DESCRIPCIÓN";
+                    }
                 }
             }
-
+        }
+        else
+        {
+            resultado = "DEBE INGRESAR UNA DESCRIPCIÓN.";
         }
 
-        return Json(true);
+        return Json(resultado);
     }
 
     public JsonResult EliminarTipoEjercicio(int tipoEjercicioID)
