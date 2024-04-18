@@ -1,0 +1,59 @@
+﻿@{
+  ViewData["Title"] = "Tipo de Ejercicios";
+}
+
+<div class="text-center">
+  <h1 class="display-4">Tipo de Ejercicios</h1>
+</div>
+
+<!-- Button trigger modal -->
+<div class="mb-2">
+  <button type="button" onclick="ListadoTipoEjercicios()" class="btn btn-primary">
+    Refrescar Tabla
+  </button>
+  <button type="button" class="btn btn-primary" onclick="NuevoRegistro()" data-bs-toggle="modal" data-bs-target="#ModalTipoEjercicio">
+    Nuevo Registro
+  </button>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="ModalTipoEjercicio" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalTitulo"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <input type="hidden" id="TipoEjercicioID" value="0"/>
+            <label for="descripcion" class="form-label">Descripción</label>
+            <input type="text" class="form-control" id="descripcion" placeholder="Nombre del tipo de actividad">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="LimpiarModal()" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" onclick="GuardarRegistro()" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<table class="table table-light table-bordered table-striped table-condensed">
+  <thead>
+    <tr>
+      <th>Descripción</th>
+      <th style="width: 70px"></th>
+      <th style="width: 70px"></th>
+    </tr>
+  </thead>
+  <tbody id="tbody-tipoejercicios">
+  </tbody>
+</table>
+
+@section Scripts {
+  <script src="~/js/tipoejercicios-1.0.0.js"></script>
+}
