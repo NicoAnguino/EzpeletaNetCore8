@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using EzpeletaNetCore8.Models;
 using EzpeletaNetCore8.Data;
