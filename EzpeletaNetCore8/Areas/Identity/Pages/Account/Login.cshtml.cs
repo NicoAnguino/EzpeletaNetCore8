@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace EzpeletaNetCore8.Areas.Identity.Pages.Account
 {
@@ -64,15 +65,15 @@ namespace EzpeletaNetCore8.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required (ErrorMessage = "Ingrese el email.")]
+            [EmailAddress (ErrorMessage = "El email no tiene el formato correcto.")]
             public string Email { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required (ErrorMessage = "Ingrese la contraseña.")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
@@ -114,7 +115,7 @@ namespace EzpeletaNetCore8.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                    _logger.LogInformation("Usuario registrado.");
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -123,12 +124,12 @@ namespace EzpeletaNetCore8.Areas.Identity.Pages.Account
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning("User account locked out.");
+                    _logger.LogWarning("Cuenta de usuario bloqueada.");
                     return RedirectToPage("./Lockout");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Inicio de sesión no válido.");
                     return Page();
                 }
             }

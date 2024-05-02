@@ -22,17 +22,20 @@
                 </div>
 
                 <form id="account" method="post">
+                     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                   <p>Por favor, ingrese a su cuenta</p>
 
                   <div data-mdb-input-init class="form-outline mb-4">
                     <input asp-for="Input.Email" type="email" id="form2Example11" class="form-control"
                       placeholder="Dirección de correo electrónico" />
                     <label class="form-label" for="form2Example11">Email</label>
+                      <span asp-validation-for="Input.Email" class="text-danger"></span>
                   </div>
 
                   <div data-mdb-input-init class="form-outline mb-4">
                     <input asp-for="Input.Password" type="password" id="form2Example22" class="form-control" />
                     <label class="form-label" for="form2Example22">Contraseña</label>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
                   </div>
 
                   <div class="text-center pt-1 mb-5 pb-1">
