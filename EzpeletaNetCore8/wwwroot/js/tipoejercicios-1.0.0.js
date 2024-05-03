@@ -28,13 +28,13 @@ function ListadoTipoEjercicios(){
                 <tr>
                     <td>${tipoDeEjercicio.descripcion}</td>
                     <td class="text-center">
-                    <button type="button" class="btn btn-success" onclick="AbrirModalEditar(${tipoDeEjercicio.tipoEjercicioID})">
-                    Editar
+                    <button type="button" class="btn btn-success btn-sm" onclick="AbrirModalEditar(${tipoDeEjercicio.tipoEjercicioID})">
+                    <i class="fa-solid fa-marker"></i>
                     </button>
                     </td>
                     <td class="text-center">
-                    <button type="button" class="btn btn-danger" onclick="EliminarRegistro(${tipoDeEjercicio.tipoEjercicioID})">
-                    Eliminar
+                    <button type="button" class="btn btn-danger btn-sm" onclick="EliminarRegistro(${tipoDeEjercicio.tipoEjercicioID})">
+                    <i class="fa-solid fa-trash"></i>
                     </button>
                     </td>
                 </tr>
