@@ -8,9 +8,9 @@
 
 <!-- Button trigger modal -->
 <div class="mb-2">
-  <button type="button" onclick="ListadoTipoEjercicios()" class="btn btn-success">
+  @* <button type="button" onclick="ListadoTipoEjercicios()" class="btn btn-success">
     <i class="fa-solid fa-arrows-rotate"></i> Refrescar
-  </button>
+  </button> *@
   <button type="button" class="btn btn-success" onclick="NuevoRegistro()" data-bs-toggle="modal" data-bs-target="#ModalTipoEjercicio">
     <i class="fa-solid fa-square-plus"></i> Nuevo
   </button>
@@ -36,7 +36,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" onclick="LimpiarModal()" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" onclick="GuardarRegistro()" class="btn btn-primary">Guardar</button>
+        <button type="button" onclick="GuardarRegistro()" class="btn btn-success">Guardar</button>
       </div>
     </div>
   </div>

@@ -8,9 +8,9 @@
 
 <!-- Button trigger modal -->
 <div class="mb-2">
-  <button type="button" class="btn btn-primary" onclick="NuevoRegistro()" data-bs-toggle="modal"
+  <button type="button" class="btn btn-success" onclick="NuevoRegistro()" data-bs-toggle="modal"
     data-bs-target="#ModalEjercicioFisico">
-    Nuevo Registro
+    <i class="fa-solid fa-square-plus"></i> Nuevo
   </button>
 </div>
 
@@ -53,13 +53,18 @@
               <label for="EstadoEmocionalFin" class="form-label">Estado Emocional Fin</label>
               @Html.DropDownList("EstadoEmocionalFin", null, htmlAttributes: new { @class = "form-control" })
             </div>
+
+             <div class="mb-3 col-12">
+              <label for="Observaciones" class="form-label">Observaciones</label>
+              <textarea id="Observaciones" class="form-control"></textarea>
+            </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" onclick="LimpiarModal()" class="btn btn-secondary"
           data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" onclick="GuardarRegistro()" class="btn btn-primary">Guardar</button>
+        <button type="button" onclick="GuardarRegistro()" class="btn btn-success">Guardar</button>
       </div>
     </div>
   </div>
@@ -69,14 +74,18 @@
   <thead>
     <tr>
       <th>Descripción</th>
+      <th class="text-center">Inicio</th>
+      <th>Estado Emocional</th>
+      <th class="text-center">Fin</th>
+      <th>Estado Emocional</th>
       <th style="width: 70px"></th>
       <th style="width: 70px"></th>
     </tr>
   </thead>
-  <tbody id="tbody-tipoejercicios">
+  <tbody id="tbody-ejerciciosfisicos">
   </tbody>
 </table>
 
 @section Scripts {
-  @* <script src="~/js/tipoejercicios-1.0.0.js"></script> *@
+  <script src="~/js/ejerciciosfisicos-1.0.0.js"></script> 
 }

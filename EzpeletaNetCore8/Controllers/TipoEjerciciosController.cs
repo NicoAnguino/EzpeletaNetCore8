@@ -110,10 +110,18 @@ public class TipoEjerciciosController : Controller
 
     public JsonResult EliminarTipoEjercicio(int tipoEjercicioID)
     {
-        var tipoEjercicio = _context.TipoEjercicios.Find(tipoEjercicioID);
-        _context.Remove(tipoEjercicio);
-        _context.SaveChanges();
+        bool eliminado = false;
 
-        return Json(true);
+        //BUSCAR SI EXISTEN EJERCICIOS CARGADOS
+        var existeEjercicio = _context.EjerciciosFisicos.Where(t => t.TipoEjercicioID == tipoEjercicioID).Count();
+        if (existeEjercicio == 0)
+        {
+            var tipoEjercicio = _context.TipoEjercicios.Find(tipoEjercicioID);
+            _context.Remove(tipoEjercicio);
+            _context.SaveChanges();
+            eliminado = true;
+        }
+
+        return Json(eliminado);
     }
 }
