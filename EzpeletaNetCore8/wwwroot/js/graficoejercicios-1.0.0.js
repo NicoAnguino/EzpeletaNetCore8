@@ -1,14 +1,62 @@
 
-window.onload = MostrarGrafico();
+window.onload = GraficoCircular();
 
 let graficoEjercicio;
+let graficoCircularEjercicio;
+
+function GraficoCircular(){
+
+    let mesBuscar = $("#MesEjercicioBuscar").val();
+    let anioActividadBuscar = $("#AnioEjercicioBuscar").val();
+    $.ajax({
+        type: "POST",
+        url: '../../Home/GraficoTortaTipoActividades',
+        data: {Mes: mesBuscar, Anio: anioActividadBuscar},
+        success: function (vistaTipoEjercicioFisico) {
+           
+            var labels = [];
+            var data = [];
+            var fondo = [];
+            $.each(vistaTipoEjercicioFisico, function (index, tipoEjercicio) {
+
+                labels.push(tipoEjercicio.descripcion);
+                var color = generarColorVerde();
+                fondo.push(color);
+                data.push(tipoEjercicio.cantidadMinutos);
+
+            });
+
+            var ctxPie = document.getElementById("grafico-circular");
+            graficoCircularEjercicio = new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: fondo,
+                    }],
+                },
+            });
+
+            MostrarGrafico(); 
+        },
+        error: function (data) {
+        }
+    });
+}
 
 //DEBEMOS CREAR LA FUNCION PARA QUE BUSQUE EN BASE DE DATOS EN LA TABLA DE EJERCICIOS LOS EJERCICIOS QUE
 //COINCIDAN CON EL ELEMENTO TipoEjercicioID, CON EL MES Y EL AÑO
 
-$("#TipoEjercicioID, #MesEjercicioBuscar, #AnioEjercicioBuscar").change(function () {
+$("#TipoEjercicioID").change(function () {
     graficoEjercicio.destroy();
     MostrarGrafico();
+});
+
+$("#MesEjercicioBuscar, #AnioEjercicioBuscar").change(function () {
+    graficoCircularEjercicio.destroy();
+    graficoEjercicio.destroy();
+    GraficoCircular();
 });
 
 function MostrarGrafico() {
@@ -16,7 +64,7 @@ function MostrarGrafico() {
     let mesEjercicioBuscar = document.getElementById("MesEjercicioBuscar").value;
     let anioEjercicioBuscar = document.getElementById("AnioEjercicioBuscar").value;
 
-    console.log(tipoEjercicioID + " - " + mesEjercicioBuscar + " - " + anioEjercicioBuscar);
+    //console.log(tipoEjercicioID + " - " + mesEjercicioBuscar + " - " + anioEjercicioBuscar);
 
     $.ajax({
         // la URL para la petición
@@ -34,22 +82,48 @@ function MostrarGrafico() {
 
             let labels = [];
             let data = []; 
+            let diasConEjercicios = 0;
+            let minutosTotales = 0;
 
             $.each(ejerciciosPorDias, function (index, ejercicioDia) { 
-                labels.push(ejercicioDia.dia + " DE " + ejercicioDia.mes);
+                labels.push(ejercicioDia.dia + " " + ejercicioDia.mes);
                 data.push(ejercicioDia.cantidadMinutos);
+                minutosTotales += ejercicioDia.cantidadMinutos;
+                if (ejercicioDia.cantidadMinutos > 0){
+                    diasConEjercicios += 1;
+                }
             });
+
+            // Obtener el elemento <select>
+            var inputTipoEjercicioID = document.getElementById("TipoEjercicioID");
+        
+            // Obtener el texto de la opción seleccionada
+            var ejercicioNombre = inputTipoEjercicioID.options[inputTipoEjercicioID.selectedIndex].text;
+
+            let diasSinEjercicios = ejerciciosPorDias.length - diasConEjercicios;
+            $("#texto-card-total-ejercicios").text(minutosTotales + " MINUTOS EN " + diasConEjercicios + " DÍAS");
+            $("#texto-card-sin-ejercicios").text(diasSinEjercicios + " DÍAS SIN "+ ejercicioNombre);
 
             const ctx = document.getElementById('grafico-area');
 
             graficoEjercicio = new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Cantidad de Minutos',
+                        label: 'CANTIDAD DE MINUTOS',
                         data: data,
-                        borderWidth: 1
+                        borderWidth: 2,
+                        borderRadius: 3,
+                        backgroundColor: "rgba(0,129,112,0.2)",
+                        borderColor: "rgba(0,129,112,1)",
+                        pointRadius: 5,
+                        pointBackgroundColor: "rgba(0,129,112,1)",
+                        pointBorderColor: "rgba(255,255,255,0.8)",
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "rgba(0,116,100,1)",
+                        pointHitRadius: 50,
+                        pointBorderWidth: 2,
                     }]
                 },
                 options: {
@@ -60,18 +134,28 @@ function MostrarGrafico() {
                     }
                 }
             });
-
         },
 
         // código a ejecutar si la petición falla;
         // son pasados como argumentos a la función
         // el objeto de la petición en crudo y código de estatus de la petición
         error: function (xhr, status) {
-            console.log('Disculpe, existió un problema al crear el grafico.');
+            console.log('Disculpe, existió un problema al crear el gráfico.');
         }
     });
 }
 
-//LUEGO CUANDO CAMBIA ALGUNO DE LOS FILTROS DEBEMOS VOLVER A DESENCADENAR DICHA FUNCION
 
+function generarColorVerde() {
+    // El valor de GG será alto (de 128 a 255) para garantizar que predomine el verde.
+    // Los valores de RR y BB serán bajos (de 0 a 127).
+
+    let rr = Math.floor(Math.random() * 128); // 0 a 127
+    let gg = Math.floor(Math.random() * 128) + 128; // 128 a 255
+    let bb = Math.floor(Math.random() * 128); // 0 a 127
+
+    // Convertimos a hexadecimal y formateamos para que tenga siempre dos dígitos.
+    let colorHex = `#${rr.toString(16).padStart(2, '0')}${gg.toString(16).padStart(2, '0')}${bb.toString(16).padStart(2, '0')}`;
+    return colorHex;
+}
 

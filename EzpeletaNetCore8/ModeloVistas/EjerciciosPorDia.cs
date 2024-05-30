@@ -10,3 +10,12 @@ public class EjerciciosPorDia
     public int CantidadMinutos { get; set; }    
 }
 
+public class VistaTipoEjercicioFisico
+{
+     public int TipoEjercicioID { get; set; }
+     public string? Descripcion { get; set; } 
+
+     public decimal CantidadMinutos { get; set; }
+
+}
+

@@ -4,6 +4,7 @@ using EzpeletaNetCore8.Models;
 using Microsoft.AspNetCore.Authorization;
 using EzpeletaNetCore8.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using SQLitePCL;
 
 namespace EzpeletaNetCore8.Controllers;
 
@@ -44,7 +45,7 @@ public class HomeController : Controller
             var diaMesMostrar = new EjerciciosPorDia
             {
                 Dia = i,
-                Mes = fechaMes.ToString("MMMM").ToUpper(),
+                Mes = fechaMes.ToString("MMM").ToUpper(),
                 CantidadMinutos = 0
             };
             ejerciciosPorDias.Add(diaMesMostrar);
@@ -60,11 +61,56 @@ public class HomeController : Controller
             var ejercicioDiaMostrar = ejerciciosPorDias.Where(e => e.Dia == ejercicio.Inicio.Day).SingleOrDefault();
             if (ejercicioDiaMostrar != null)
             {
-                ejercicioDiaMostrar.CantidadMinutos += ejercicio.Fin.Subtract(ejercicio.Inicio).Minutes;
+                //CON LA CLASE TIMESPAN PODEMOS GUARDAR EL INTERVALO DE TIEMPO ENTRE DOS FECHAS PARA LUEGO USAR EL RESULTADO EN MINUTOS TOTALES
+                TimeSpan diferencia = ejercicio.Fin - ejercicio.Inicio;
+                ejercicioDiaMostrar.CantidadMinutos += Convert.ToInt32(diferencia.TotalMinutes);
             }
         }
 
         return Json(ejerciciosPorDias);
+    }
+
+    public JsonResult GraficoTortaTipoActividades(int Mes, int Anio)
+    {
+        //INICIALIZAMOS UN LISTADO DE TIPO DE EJERCICIOS
+        var vistaTipoEjercicioFisico = new List<VistaTipoEjercicioFisico>();
+
+        //BUSCAMOS LOS TIPOS DE EJERCICIOS QUE EXISTEN ACTIVOS
+        var tiposEjerciciosFisicos = _context.TipoEjercicios.Where(s => s.Eliminado == false).ToList();
+
+        //LUEGO LOS RECORREMOS
+        foreach (var tipoEjercicioFisico in tiposEjerciciosFisicos)
+        {
+            //POR CADA TIPO DE EJERCICIO BUSQUEMOS EN LA TABLA DE EJERCICIOS FISICOS POR ESE TIPO, EN EL MES Y AÑO SOLICITADO
+            var ejercicios = _context.EjerciciosFisicos
+                                .Where(s => s.TipoEjercicioID == tipoEjercicioFisico.TipoEjercicioID
+                                && s.Inicio.Month == Mes && s.Inicio.Year == Anio).ToList();
+
+            // .Select(e => e.IntervaloEjercicio.TotalMinutes)
+            // .Sum();
+
+            foreach (var ejercicio in ejercicios)
+            {
+                var tipoEjercicioFisicoMostrar = vistaTipoEjercicioFisico.Where(e => e.TipoEjercicioID == tipoEjercicioFisico.TipoEjercicioID).SingleOrDefault();
+                if (tipoEjercicioFisicoMostrar == null)
+                {
+                    tipoEjercicioFisicoMostrar = new VistaTipoEjercicioFisico
+                    {
+                        TipoEjercicioID = tipoEjercicioFisico.TipoEjercicioID,
+                        Descripcion = tipoEjercicioFisico.Descripcion,
+                        CantidadMinutos = Convert.ToDecimal(ejercicio.IntervaloEjercicio.TotalMinutes)
+                    };
+                    vistaTipoEjercicioFisico.Add(tipoEjercicioFisicoMostrar);
+                }
+                else{
+                    tipoEjercicioFisicoMostrar.CantidadMinutos += Convert.ToDecimal(ejercicio.IntervaloEjercicio.TotalMinutes);
+                }
+            }
+
+
+        }
+
+        return Json(vistaTipoEjercicioFisico);
     }
 
     public IActionResult Privacy()
