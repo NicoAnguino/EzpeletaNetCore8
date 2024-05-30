@@ -41,18 +41,32 @@ public class EjerciciosFisicosController : Controller
         ViewBag.EstadoEmocionalFin = selectListItems.OrderBy(t => t.Text).ToList();
 
         var tipoEjercicios = _context.TipoEjercicios.ToList();
+        var tiposEjerciciosBuscar = tipoEjercicios.ToList();
+
         tipoEjercicios.Add(new TipoEjercicio { TipoEjercicioID = 0, Descripcion = "[SELECCIONE...]" });
         ViewBag.TipoEjercicioID = new SelectList(tipoEjercicios.OrderBy(c => c.Descripcion), "TipoEjercicioID", "Descripcion");
+
+        tiposEjerciciosBuscar.Add(new TipoEjercicio { TipoEjercicioID = 0, Descripcion = "[TODOS LOS TIPOS DE EJERCICIOS]" });
+        ViewBag.TipoEjercicioBuscarID = new SelectList(tiposEjerciciosBuscar.OrderBy(c => c.Descripcion), "TipoEjercicioID", "Descripcion");
 
         return View();
     }
 
-    public JsonResult GetEjerciciosFisicos(int? id)
+    public JsonResult GetEjerciciosFisicos(int? id, DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar, int? TipoEjercicioBuscarID)
     {
         var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).ToList();
         if (id != null)
         {
             ejerciciosFisicos = ejerciciosFisicos.Where(t => t.EjercicioFisicoID == id).ToList();
+        }
+
+        if(FechaDesdeBuscar != null && FechaHastaBuscar != null){
+             ejerciciosFisicos = ejerciciosFisicos.Where(t => t.Inicio >= FechaDesdeBuscar && t.Inicio <= FechaHastaBuscar).ToList();
+        }
+
+        if (TipoEjercicioBuscarID != null && TipoEjercicioBuscarID != 0)
+        {
+            ejerciciosFisicos = ejerciciosFisicos.Where(t => t.TipoEjercicioID == TipoEjercicioBuscarID).ToList();
         }
 
         var ejercicioFisicosMostrar = ejerciciosFisicos
@@ -79,8 +93,17 @@ public class EjerciciosFisicosController : Controller
 
     public JsonResult GuardarEjercicio(int ejercicioFisicoID, int tipoEjercicioID, EstadoEmocional estadoEmocionalInicio, EstadoEmocional estadoEmocionalFin, DateTime fechaInicio, DateTime fechaFin, string? observaciones)
     {
-        if (tipoEjercicioID > 0)
+        int error = 0;
+
+        //VALIDAMOS QUE SELECCIONE TIPO DE EJERCICIO
+        if (tipoEjercicioID == 0)
         {
+            error = 1;
+        }
+
+        //VALIDAMOS QUE LA FECHA DE INICIO NO SEA MAYOR A LA DE FIN
+        if(error == 0)
+        {        
             if (ejercicioFisicoID == 0)
             {
                 //4- GUARDAR EL EJERCICIO
@@ -95,12 +118,11 @@ public class EjerciciosFisicosController : Controller
                 };
                 _context.Add(ejercicio);
                 _context.SaveChanges();
-
             }
             else
             {
                 //QUIERE DECIR QUE VAMOS A EDITAR EL REGISTRO
-                var ejercicioEditar = _context.EjerciciosFisicos.Where(t => t.TipoEjercicioID == tipoEjercicioID).SingleOrDefault();
+                var ejercicioEditar = _context.EjerciciosFisicos.Where(t => t.EjercicioFisicoID == ejercicioFisicoID).SingleOrDefault();
                 if (ejercicioEditar != null)
                 {
                     ejercicioEditar.TipoEjercicioID = tipoEjercicioID;
@@ -114,7 +136,7 @@ public class EjerciciosFisicosController : Controller
             }
         }
 
-        return Json(true);
+        return Json(error);
     }
 
     public JsonResult EliminarEjercicio(int ejercicioFisicoID)

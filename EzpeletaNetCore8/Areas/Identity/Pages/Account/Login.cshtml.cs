@@ -116,7 +116,8 @@ namespace EzpeletaNetCore8.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("Usuario registrado.");
-                    return LocalRedirect(returnUrl);
+                    //return LocalRedirect(returnUrl);
+                    return RedirectToAction("Index", "Home");
                 }
                 if (result.RequiresTwoFactor)
                 {

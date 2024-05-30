@@ -2,13 +2,18 @@
 window.onload = ListadoEjercicios();
 
 function ListadoEjercicios(){
- 
+    let fechaDesdeBuscar = $("#FechaDesdeBuscar").val();
+    let fechaHastaBuscar = $("#FechaHastaBuscar").val();
+    let tipoEjercicioBuscarID = $("#TipoEjercicioBuscarID").val();
     $.ajax({
         // la URL para la petición
         url: '../../EjerciciosFisicos/GetEjerciciosFisicos',
         // la información a enviar
         // (también es posible utilizar una cadena de datos)
-        data: {  },
+        data: { FechaDesdeBuscar: fechaDesdeBuscar,
+            FechaHastaBuscar:fechaHastaBuscar,
+            TipoEjercicioBuscarID:tipoEjercicioBuscarID
+         },
         // especifica si será una petición POST o GET
         type: 'POST',
         // el tipo de información que se espera de respuesta
@@ -135,12 +140,19 @@ function GuardarRegistro(){
         dataType: 'json',
         // código a ejecutar si la petición es satisfactoria;
         // la respuesta es pasada como argumento a la función
-        success: function (resultado) {
+        success: function (error) {
 
-            if(resultado != true){
-                alert(resultado);
+            if(error == 0){
+                ListadoEjercicios();
             }
-            ListadoEjercicios();
+            if(error == 1){
+                alert("DEBE SELECCIONAR UN TIPO DE EJERCICIO");
+            }
+            if(error == 2){
+                alert("FECHAS INCORRECTAS");
+            }
+
+            
         },
 
         // código a ejecutar si la petición falla;

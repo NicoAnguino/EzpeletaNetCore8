@@ -6,13 +6,7 @@
   <h1 class="display-4">Ejercicios Físicos</h1>
 </div>
 
-<!-- Button trigger modal -->
-<div class="mb-2">
-  <button type="button" class="btn btn-success" onclick="NuevoRegistro()" data-bs-toggle="modal"
-    data-bs-target="#ModalEjercicioFisico">
-    <i class="fa-solid fa-square-plus"></i> Nuevo
-  </button>
-</div>
+
 
 
 <!-- Modal -->
@@ -54,7 +48,7 @@
               @Html.DropDownList("EstadoEmocionalFin", null, htmlAttributes: new { @class = "form-control" })
             </div>
 
-             <div class="mb-3 col-12">
+            <div class="mb-3 col-12">
               <label for="Observaciones" class="form-label">Observaciones</label>
               <textarea id="Observaciones" class="form-control"></textarea>
             </div>
@@ -70,10 +64,42 @@
   </div>
 </div>
 
+
+<div class="row mb-3">
+  <div class="col-md-3">
+    <label class="form-label">Desde</label>
+    <input type="datetime-local" id="FechaDesdeBuscar" class="form-control"
+      value="@DateTime.Now.Date.ToString("yyyy-MM-dd HH:mm")" />
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Hasta</label>
+    <input type="datetime-local" id="FechaHastaBuscar" class="form-control"
+      value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" />
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Tipo de Ejercicio</label>
+    @Html.DropDownList("TipoEjercicioBuscarID", null, htmlAttributes: new { @class = "form-control" })
+  </div>
+   <div class="col-md-3 mt-4">
+      <button type="button" class="btn btn-primary" onclick="ListadoEjercicios()">
+    <i class="fa-solid fa-search"></i> Buscar
+  </button>
+  </div>
+</div>
+
+
+<!-- Button trigger modal -->
+<div class="mb-2">
+  <button type="button" class="btn btn-success" onclick="NuevoRegistro()" data-bs-toggle="modal"
+    data-bs-target="#ModalEjercicioFisico">
+    <i class="fa-solid fa-square-plus"></i> Nuevo
+  </button>
+</div>
+
 <table class="table table-light table-bordered table-striped table-condensed">
   <thead>
     <tr>
-      <th>Descripción</th>
+      <th>Tipo de Ejercicio</th>
       <th class="text-center">Inicio</th>
       <th>Estado Emocional</th>
       <th class="text-center">Fin</th>
@@ -87,5 +113,5 @@
 </table>
 
 @section Scripts {
-  <script src="~/js/ejerciciosfisicos-1.0.0.js"></script> 
+  <script src="~/js/ejerciciosfisicos-1.0.0.js"></script>
 }
