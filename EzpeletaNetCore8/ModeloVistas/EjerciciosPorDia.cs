@@ -3,6 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EzpeletaNetCore8.Models;
 
+
+public class PanelEjercicios 
+{
+    public List<EjerciciosPorDia>? EjerciciosPorDias { get; set; }
+    public List<VistaTipoEjercicioFisico>? VistaTipoEjercicioFisico { get; set; }
+}
+
 public class EjerciciosPorDia
 {   
     public int Dia { get; set; }

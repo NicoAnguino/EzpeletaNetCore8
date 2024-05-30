@@ -13,7 +13,7 @@ namespace EzpeletaNetCore8.Models
         public DateTime Fin { get; set; }
 
         [NotMapped]
-         public TimeSpan IntervaloEjercicio { get {return Fin - Inicio;} }
+        public TimeSpan IntervaloEjercicio { get {return Fin - Inicio;} }//UN CAMPO EN VISTA SOLAMENTE NO EN LA TABLA DE SQL
 
         public EstadoEmocional EstadoEmocionalInicio {get; set; } 
         public EstadoEmocional EstadoEmocionalFin {get; set; } 

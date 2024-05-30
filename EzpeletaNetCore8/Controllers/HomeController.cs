@@ -28,6 +28,85 @@ public class HomeController : Controller
         return View();
     }
 
+    public JsonResult PanelGraficos(int TipoEjercicioID, int Mes, int Anio)
+    {
+        PanelEjercicios panelEjercicios = new PanelEjercicios();
+        panelEjercicios.EjerciciosPorDias = new List<EjerciciosPorDia>();
+        panelEjercicios.VistaTipoEjercicioFisico = new List<VistaTipoEjercicioFisico>();
+
+        //INICIO GRAFICO DIAS DEL MES
+        //POR DEFECTO EN EL LISTADO AGREGAR TODOS LOS DIAS DEL MES PARA LUEGO RECORRER Y COMPLETAR EN BASE A LOS DIAS CON EJERCICIOS
+        var diasDelMes = DateTime.DaysInMonth(Anio, Mes);
+
+        //INICIALIZO UNA VARIABLE DE TIPO FECHA
+        DateTime fechaMes = new DateTime();
+        //RESTAMOS UN MES SOBRE ESA FECHA
+        fechaMes = fechaMes.AddMonths(Mes - 1);
+
+        for (int i = 1; i <= diasDelMes; i++)
+        {
+            var diaMesMostrar = new EjerciciosPorDia
+            {
+                Dia = i,
+                Mes = fechaMes.ToString("MMM").ToUpper(),
+                CantidadMinutos = 0
+            };
+            panelEjercicios.EjerciciosPorDias.Add(diaMesMostrar);
+        }
+
+        //DEBEMOS BUSCAR EN BASE DE DATOS EN LA TABLA DE EJERCICIOS LOS EJERCICIOS QUE COINCIDAN CON EL MES Y AÑO INGRESADO
+        var ejerciciosMes = _context.EjerciciosFisicos.Where(e => e.Inicio.Month == Mes && e.Inicio.Year == Anio).ToList();
+
+        var ejerciciosTipoEjercicio = ejerciciosMes.Where(e=>e.TipoEjercicioID == TipoEjercicioID).ToList();
+
+        foreach (var ejercicio in ejerciciosTipoEjercicio.OrderBy(e => e.Inicio))
+        {
+            //POR CADA EJERCICIO DEBEMOS AGREGAR EN EL LISTADO SI EL DIA DE ESE EJERCICIO NO EXISTE, SINO SUMARLO
+            var ejercicioDiaMostrar = panelEjercicios.EjerciciosPorDias.Where(e => e.Dia == ejercicio.Inicio.Day).SingleOrDefault();
+            if (ejercicioDiaMostrar != null)
+            {
+                ejercicioDiaMostrar.CantidadMinutos += Convert.ToInt32(ejercicio.IntervaloEjercicio.TotalMinutes);
+            }
+        }
+        //FIN GRAFICO DIAS DEL MES
+
+        //INICIO GRAFICO TOTALIZADOR POR TIPO DE EJERCICIO
+
+        //BUSCAMOS LOS TIPOS DE EJERCICIOS QUE EXISTEN ACTIVOS
+        var tiposEjerciciosFisicos = _context.TipoEjercicios.Where(s => s.Eliminado == false).ToList();
+
+        //LUEGO LOS RECORREMOS
+        foreach (var tipoEjercicioFisico in tiposEjerciciosFisicos)
+        {
+            //POR CADA TIPO DE EJERCICIO BUSQUEMOS EN LA TABLA DE EJERCICIOS FISICOS POR ESE TIPO, EN EL MES Y AÑO SOLICITADO
+            var ejercicios = _context.EjerciciosFisicos
+                                .Where(s => s.TipoEjercicioID == tipoEjercicioFisico.TipoEjercicioID
+                                && s.Inicio.Month == Mes && s.Inicio.Year == Anio).ToList();
+
+            foreach (var ejercicio in ejercicios)
+            {
+                var tipoEjercicioFisicoMostrar = panelEjercicios.VistaTipoEjercicioFisico.Where(e => e.TipoEjercicioID == tipoEjercicioFisico.TipoEjercicioID).SingleOrDefault();
+                if (tipoEjercicioFisicoMostrar == null)
+                {
+                    tipoEjercicioFisicoMostrar = new VistaTipoEjercicioFisico
+                    {
+                        TipoEjercicioID = tipoEjercicioFisico.TipoEjercicioID,
+                        Descripcion = tipoEjercicioFisico.Descripcion,
+                        CantidadMinutos = Convert.ToDecimal(ejercicio.IntervaloEjercicio.TotalMinutes)
+                    };
+                    panelEjercicios.VistaTipoEjercicioFisico.Add(tipoEjercicioFisicoMostrar);
+                }
+                else{
+                    tipoEjercicioFisicoMostrar.CantidadMinutos += Convert.ToDecimal(ejercicio.IntervaloEjercicio.TotalMinutes);
+                }
+            }
+        }
+
+        //FIN GRAFICO TOTALIZADOR POR TIPO DE EJERCICIO
+
+        return Json(panelEjercicios);
+    }
+
     public JsonResult GraficoTipoEjercicioMes(int TipoEjercicioID, int Mes, int Anio)
     {
         List<EjerciciosPorDia> ejerciciosPorDias = new List<EjerciciosPorDia>();
@@ -62,8 +141,9 @@ public class HomeController : Controller
             if (ejercicioDiaMostrar != null)
             {
                 //CON LA CLASE TIMESPAN PODEMOS GUARDAR EL INTERVALO DE TIEMPO ENTRE DOS FECHAS PARA LUEGO USAR EL RESULTADO EN MINUTOS TOTALES
-                TimeSpan diferencia = ejercicio.Fin - ejercicio.Inicio;
-                ejercicioDiaMostrar.CantidadMinutos += Convert.ToInt32(diferencia.TotalMinutes);
+                //TimeSpan diferencia = ejercicio.Fin - ejercicio.Inicio;
+                //ejercicioDiaMostrar.CantidadMinutos += Convert.ToInt32(diferencia.TotalMinutes);
+                ejercicioDiaMostrar.CantidadMinutos += Convert.ToInt32(ejercicio.IntervaloEjercicio.TotalMinutes);
             }
         }
 
@@ -86,9 +166,6 @@ public class HomeController : Controller
                                 .Where(s => s.TipoEjercicioID == tipoEjercicioFisico.TipoEjercicioID
                                 && s.Inicio.Month == Mes && s.Inicio.Year == Anio).ToList();
 
-            // .Select(e => e.IntervaloEjercicio.TotalMinutes)
-            // .Sum();
-
             foreach (var ejercicio in ejercicios)
             {
                 var tipoEjercicioFisicoMostrar = vistaTipoEjercicioFisico.Where(e => e.TipoEjercicioID == tipoEjercicioFisico.TipoEjercicioID).SingleOrDefault();
@@ -106,8 +183,6 @@ public class HomeController : Controller
                     tipoEjercicioFisicoMostrar.CantidadMinutos += Convert.ToDecimal(ejercicio.IntervaloEjercicio.TotalMinutes);
                 }
             }
-
-
         }
 
         return Json(vistaTipoEjercicioFisico);
