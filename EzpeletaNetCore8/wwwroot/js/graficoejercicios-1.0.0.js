@@ -1,5 +1,5 @@
 
-window.onload = MostrarPanelGraficos();
+window.onload = GraficoCircular();
 
 let graficoEjercicio;
 let graficoCircularEjercicio;
@@ -49,15 +49,17 @@ function GraficoCircular(){
 //COINCIDAN CON EL ELEMENTO TipoEjercicioID, CON EL MES Y EL AÑO
 
 $("#TipoEjercicioID").change(function () {
-    graficoCircularEjercicio.destroy();
+    //graficoCircularEjercicio.destroy();
     graficoEjercicio.destroy();
-    MostrarPanelGraficos();
+    MostrarGrafico();
+    //MostrarPanelGraficos();
 });
 
 $("#MesEjercicioBuscar, #AnioEjercicioBuscar").change(function () {
     graficoCircularEjercicio.destroy();
     graficoEjercicio.destroy();
-    MostrarPanelGraficos();
+    GraficoCircular();
+    //MostrarPanelGraficos();
 });
 
 function MostrarGrafico() {
