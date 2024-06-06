@@ -46,7 +46,7 @@ public class EjerciciosFisicosController : Controller
         tipoEjercicios.Add(new TipoEjercicio { TipoEjercicioID = 0, Descripcion = "[SELECCIONE...]" });
         ViewBag.TipoEjercicioID = new SelectList(tipoEjercicios.OrderBy(c => c.Descripcion), "TipoEjercicioID", "Descripcion");
 
-        tiposEjerciciosBuscar.Add(new TipoEjercicio { TipoEjercicioID = 0, Descripcion = "[TODOS LOS TIPOS DE EJERCICIOS]" });
+        tiposEjerciciosBuscar.Add(new TipoEjercicio { TipoEjercicioID = 0, Descripcion = "[TODOS]" });
         ViewBag.TipoEjercicioBuscarID = new SelectList(tiposEjerciciosBuscar.OrderBy(c => c.Descripcion), "TipoEjercicioID", "Descripcion");
 
         return View();
@@ -68,6 +68,8 @@ public class EjerciciosFisicosController : Controller
         {
             ejerciciosFisicos = ejerciciosFisicos.Where(t => t.TipoEjercicioID == TipoEjercicioBuscarID).ToList();
         }
+
+        ejerciciosFisicos = ejerciciosFisicos.OrderByDescending(t => t.Inicio).ToList();
 
         var ejercicioFisicosMostrar = ejerciciosFisicos
         .Select(e => new VistaEjercicioFisico

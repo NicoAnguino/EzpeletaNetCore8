@@ -66,24 +66,19 @@
 
 
 <div class="row mb-3">
-  <div class="col-md-3">
+  <div class="col-md-2">
     <label class="form-label">Desde</label>
-    <input type="datetime-local" id="FechaDesdeBuscar" class="form-control"
+    <input type="datetime-local" id="FechaDesdeBuscar" onchange="ListadoEjercicios()" class="form-control"
       value="@DateTime.Now.Date.ToString("yyyy-MM-dd HH:mm")" />
   </div>
-  <div class="col-md-3">
+  <div class="col-md-2">
     <label class="form-label">Hasta</label>
-    <input type="datetime-local" id="FechaHastaBuscar" class="form-control"
+    <input type="datetime-local" id="FechaHastaBuscar" onchange="ListadoEjercicios()" class="form-control"
       value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" />
   </div>
-  <div class="col-md-3">
+  <div class="col-md-2">
     <label class="form-label">Tipo de Ejercicio</label>
-    @Html.DropDownList("TipoEjercicioBuscarID", null, htmlAttributes: new { @class = "form-control" })
-  </div>
-   <div class="col-md-3 mt-4">
-      <button type="button" class="btn btn-primary" onclick="ListadoEjercicios()">
-    <i class="fa-solid fa-search"></i> Buscar
-  </button>
+    @Html.DropDownList("TipoEjercicioBuscarID", null, htmlAttributes: new { @class = "form-control", @onchange="ListadoEjercicios()" })
   </div>
 </div>
 
