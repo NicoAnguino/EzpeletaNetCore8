@@ -9,13 +9,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EzpeletaNetCore8.Controllers;
 
-[Authorize]
+
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private ApplicationDbContext _context;
-          private readonly UserManager<IdentityUser> _userManager;
-      private readonly RoleManager<IdentityRole> _rolManager;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly RoleManager<IdentityRole> _rolManager;
 
     public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> rolManager)
     {
@@ -25,6 +25,7 @@ public class HomeController : Controller
         _rolManager = rolManager;
     }
 
+    [Authorize]
     public async Task<IActionResult> Index()
     {
       
@@ -233,7 +234,8 @@ public class HomeController : Controller
             return Json(creado);
         }
 
-    public IActionResult Privacy()
+    [Authorize(Roles = "Administrator")]
+    public IActionResult PrivadaAdmin()
     {
         return View();
     }
