@@ -82,9 +82,9 @@ public class EjerciciosFisicosController : Controller
             Fin = e.Fin,
             FinString = e.Fin.ToString("dd/MM/yyyy HH:mm"),
             EstadoEmocionalFin = e.EstadoEmocionalFin,
-            EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString(),
+            EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString().ToUpper(),
             EstadoEmocionalInicio = e.EstadoEmocionalInicio,
-            EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString(),
+            EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString().ToUpper(),
             Observaciones = e.Observaciones
         })
         .ToList();

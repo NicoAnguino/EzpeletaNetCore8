@@ -28,7 +28,11 @@ public class HomeController : Controller
     [Authorize]
     public async Task<IActionResult> Index()
     {
-      
+        //BUSCAR EL ID DEL USUARIO LOGUEADO
+        var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+        //OBJETO PARA PASARLO A VISTA PARA MOSTRAR QUE FUNCIONA
+        ViewBag.UsuarioID = usuarioLogueadoID;
+
         var tipoEjercicios = _context.TipoEjercicios.ToList();
         ViewBag.TipoEjercicioID = new SelectList(tipoEjercicios.OrderBy(c => c.Descripcion), "TipoEjercicioID", "Descripcion");
         
