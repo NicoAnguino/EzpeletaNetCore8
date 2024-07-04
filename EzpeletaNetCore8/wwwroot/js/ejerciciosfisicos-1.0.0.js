@@ -31,17 +31,17 @@ function ListadoEjercicios(){
                 
                 contenidoTabla += `
                 <tr>
-                    <td>${ejercicioFisico.tipoEjercicioNombre}</td>
-                    <td class="text-center">${ejercicioFisico.inicioString}</td>
-                    <td>${ejercicioFisico.estadoEmocionalInicioString}</td>
-                    <td class="text-center">${ejercicioFisico.finString}</td>
-                    <td>${ejercicioFisico.estadoEmocionalFinString}</td>
-                    <td class="text-center">
+                    <td class="anchoCelda">${ejercicioFisico.tipoEjercicioNombre}</td>
+                    <td class="text-center anchoCelda">${ejercicioFisico.inicioString}</td>
+                    <td class="anchoCelda">${ejercicioFisico.estadoEmocionalInicioString}</td>
+                    <td class="text-center anchoCelda">${ejercicioFisico.finString}</td>
+                    <td class="anchoCelda">${ejercicioFisico.estadoEmocionalFinString}</td>
+                    <td class="text-center anchoCelda anchoBotones">
                     <button type="button" class="btn btn-success btn-sm" onclick="AbrirModalEditar(${ejercicioFisico.ejercicioFisicoID})">
                     <i class="fa-solid fa-marker"></i>
                     </button>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center anchoBotones">
                     <button type="button" class="btn btn-danger btn-sm" onclick="EliminarRegistro(${ejercicioFisico.ejercicioFisicoID})">
                     <i class="fa-solid fa-trash"></i>
                     </button>

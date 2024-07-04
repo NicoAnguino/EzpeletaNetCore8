@@ -103,6 +103,113 @@
 </div>
 
 
+  <style>
+   table {
+  width: 100%;
+}
+
+table, td {
+  border-collapse: collapse;
+  border: 1px solid #000;
+}
+
+thead {
+  display: table; /* to take the same width as tr */
+  width: calc(100% - 17px); /* - 17px because of the scrollbar width */
+}
+
+tbody {
+  display: block; /* to enable vertical scrolling */
+  max-height: 200px; /* e.g. */
+  overflow-y: scroll; /* keeps the scrollbar even if it doesn't need it; display purpose */
+}
+
+th, td {
+  width: 33.33%; /* to enable "word-break: break-all" */
+  padding: 5px;
+   text-align: center;
+  word-break: break-all; /* 4. */
+}
+
+tr {
+  display: table; /* display purpose; th's border */
+  width: 100%;
+  box-sizing: border-box; /* because of the border (Chrome needs this line, but not FF) */
+}
+
+td {
+  text-align: center;
+  border-bottom: none;
+  border-left: none;
+}
+        </style>
+
+<table> 
+  <thead> 
+    <tr>
+      <th>Table Header 1</th>
+      <th>Table Header 2</th>
+      <th>Table Header 3</th>
+    </tr> 
+  </thead>
+  <tbody>
+    <tr>
+      <td>Data1111111111111111111111111</td>
+      <td>Data</td>
+      <td>Data</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Data2222222222222222222222222</td>
+      <td>Data</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Data</td>
+      <td>Data3333333333333333333333333</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Data</td>
+      <td>Data</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Data</td>
+      <td>Data</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Data</td>
+      <td>Data</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Data</td>
+      <td>Data</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Data</td>
+      <td>Data</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Data</td>
+      <td>Data</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Data</td>
+      <td>Data</td>
+    </tr>
+  </tbody>
+</table>
+
+
+      
+
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="~/js/graficoejercicios-1.0.0.js"></script>
