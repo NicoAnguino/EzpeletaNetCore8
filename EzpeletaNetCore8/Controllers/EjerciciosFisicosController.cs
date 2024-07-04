@@ -20,6 +20,9 @@ public class EjerciciosFisicosController : Controller
 
     public IActionResult Index()
     {
+
+        MostrarEjerciciosPorTipo();
+
         // Crear una lista de SelectListItem que incluya el elemento adicional
         var selectListItems = new List<SelectListItem>
         {
@@ -50,6 +53,41 @@ public class EjerciciosFisicosController : Controller
         ViewBag.TipoEjercicioBuscarID = new SelectList(tiposEjerciciosBuscar.OrderBy(c => c.Descripcion), "TipoEjercicioID", "Descripcion");
 
         return View();
+    }
+
+
+    public void MostrarEjerciciosPorTipo()
+    {
+        //INICIALIZAMOS EL LISTADO DE ELEMENTOS VACIOS
+        List<VistaTipoEjercicio> tiposEjerciosMostrar = new List<VistaTipoEjercicio>();
+
+        var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).ToList();
+        foreach (var ejercicio in ejerciciosFisicos)
+        {
+            
+
+            //POR CADA EJERCICIO BUSCAR SI EXISTE EN EL LISTADO EL TIPO DE EJERCICIO 
+            var tipoEjercicioMostrar = tiposEjerciosMostrar.Where(t => t.TipoEjercicioID == ejercicio.TipoEjercicioID).SingleOrDefault();
+            if(tipoEjercicioMostrar == null){
+                tipoEjercicioMostrar = new VistaTipoEjercicio
+                {
+                    TipoEjercicioID = ejercicio.TipoEjercicioID,
+                    Descripcion = ejercicio.TipoEjercicio.Descripcion,
+                    ListadoPersonas = new List<VistaEjercicios>()
+                };
+                tiposEjerciosMostrar.Add(tipoEjercicioMostrar);
+            }
+
+            var vistaEjercicio = new VistaEjercicios
+            {
+                NombrePersona = ejercicio.Inicio.ToString("dd/MM/yyyy"),
+            };
+            tipoEjercicioMostrar.ListadoPersonas.Add(vistaEjercicio);
+
+          
+        }
+
+       var elementos = tiposEjerciosMostrar.ToList();
     }
 
     public JsonResult GetEjerciciosFisicos(int? id, DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar, int? TipoEjercicioBuscarID)

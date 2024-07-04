@@ -12,3 +12,17 @@ public class TipoEjercicio
     public virtual ICollection<EjercicioFisico> EjerciciosFisicos { get; set; } 
 }
 
+//TIPO PROFESION
+public class VistaTipoEjercicio
+{   
+     public int TipoEjercicioID { get; set; }
+     public string? Descripcion { get; set; }
+     public List<VistaEjercicios> ListadoPersonas { get; set; }
+}
+
+//PERSONAS QUE ESTAN REGISTRADAS EN SERVICIOS
+public class VistaEjercicios{
+    public string? NombrePersona { get; set; }
+    public string? Telefono { get; set; }
+}
+
