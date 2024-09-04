@@ -18,11 +18,75 @@ public class EjerciciosFisicosController : Controller
         _context = context;
     }
 
-    public IActionResult Index()
+
+    public IActionResult EjerciciosPorTipo()
     {
+        return View();
+    }
 
-        MostrarEjerciciosPorTipo();
 
+      public JsonResult MostrarEjerciciosPorTipo(DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar)
+    {
+        //INICIALIZAMOS EL LISTADO DE ELEMENTOS VACIOS
+        List<VistaTipoEjercicio> tiposEjerciosMostrar = new List<VistaTipoEjercicio>();
+
+        //BUSCAMOS EL LISTADO COMPLETO DE EJERCICIOS FISICOS
+        var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).ToList();
+
+        //FILTRAMOS POR FECHA EN EL CASO DE QUE SEAN DISTINTOS DE NULO
+        if(FechaDesdeBuscar != null && FechaHastaBuscar != null)
+        {
+             ejerciciosFisicos = ejerciciosFisicos.Where(t => t.Inicio >= FechaDesdeBuscar && t.Inicio <= FechaHastaBuscar).ToList();
+        }
+
+        //RECORREMOS LOS EJERCICIOS ORDENADOS POR DESCRIPCION DE TIPO DE EJERCICIO Y LUEGO POR FECHA DE INICIO
+        foreach (var e in ejerciciosFisicos.OrderBy(t => t.Inicio).OrderBy(t => t.TipoEjercicio.Descripcion))
+        {
+           
+            //POR CADA EJERCICIO BUSCAR SI EXISTE EN EL LISTADO EL TIPO DE EJERCICIO 
+            var tipoEjercicioMostrar = tiposEjerciosMostrar.Where(t => t.TipoEjercicioID == e.TipoEjercicioID).SingleOrDefault();
+            if(tipoEjercicioMostrar == null){
+                //SI NO EXISTE, AGREGARLO AL LISTADO 
+                tipoEjercicioMostrar = new VistaTipoEjercicio
+                {
+                    TipoEjercicioID = e.TipoEjercicioID,
+                    Descripcion = e.TipoEjercicio.Descripcion,
+                    ListadoEjercicios = new List<VistaEjercicioFisico>()
+                };
+                tiposEjerciosMostrar.Add(tipoEjercicioMostrar);
+            }
+
+            
+            //LUEGO ARMAMOS EL OBJETO DE SEGUNDO NIVEL CON LOS DATOS DEL EJERCICIO
+            var vistaEjercicio = new VistaEjercicioFisico
+            {
+                 EjercicioFisicoID = e.EjercicioFisicoID,
+            TipoEjercicioID = e.TipoEjercicioID,
+            TipoEjercicioNombre = e.TipoEjercicio.Descripcion,
+            Inicio = e.Inicio,
+            InicioString = e.Inicio.ToString("dd/MM/yyyy HH:mm"),
+            Fin = e.Fin,
+            FinString = e.Fin.ToString("dd/MM/yyyy HH:mm"),
+            IntervaloEjercicio = e.IntervaloEjercicio,
+            EstadoEmocionalFin = e.EstadoEmocionalFin,
+            EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString().ToUpper(),
+            EstadoEmocionalInicio = e.EstadoEmocionalInicio,
+            EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString().ToUpper(),
+
+            //ATENCIÓN A LA CONDICION PARA MOSTRAR O NO LA OBSERVACIÓN
+            Observaciones = String.IsNullOrEmpty(e.Observaciones) ? "" : e.Observaciones
+            };
+
+            //LUEGO AGREGAMOS ESE OBJETO DE EJERCICIO AL LISTADO DE EJERCICIOS DE ESE TIPO DE EJERCICIO CORRESPONDIENTE
+            tipoEjercicioMostrar.ListadoEjercicios.Add(vistaEjercicio);          
+        }
+
+       return Json(tiposEjerciosMostrar);
+    }
+
+
+    public IActionResult Index()
+    {   
         // Crear una lista de SelectListItem que incluya el elemento adicional
         var selectListItems = new List<SelectListItem>
         {
@@ -56,39 +120,7 @@ public class EjerciciosFisicosController : Controller
     }
 
 
-    public void MostrarEjerciciosPorTipo()
-    {
-        //INICIALIZAMOS EL LISTADO DE ELEMENTOS VACIOS
-        List<VistaTipoEjercicio> tiposEjerciosMostrar = new List<VistaTipoEjercicio>();
-
-        var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).ToList();
-        foreach (var ejercicio in ejerciciosFisicos)
-        {
-            
-
-            //POR CADA EJERCICIO BUSCAR SI EXISTE EN EL LISTADO EL TIPO DE EJERCICIO 
-            var tipoEjercicioMostrar = tiposEjerciosMostrar.Where(t => t.TipoEjercicioID == ejercicio.TipoEjercicioID).SingleOrDefault();
-            if(tipoEjercicioMostrar == null){
-                tipoEjercicioMostrar = new VistaTipoEjercicio
-                {
-                    TipoEjercicioID = ejercicio.TipoEjercicioID,
-                    Descripcion = ejercicio.TipoEjercicio.Descripcion,
-                    ListadoPersonas = new List<VistaEjercicios>()
-                };
-                tiposEjerciosMostrar.Add(tipoEjercicioMostrar);
-            }
-
-            var vistaEjercicio = new VistaEjercicios
-            {
-                NombrePersona = ejercicio.Inicio.ToString("dd/MM/yyyy"),
-            };
-            tipoEjercicioMostrar.ListadoPersonas.Add(vistaEjercicio);
-
-          
-        }
-
-       var elementos = tiposEjerciosMostrar.ToList();
-    }
+  
 
     public JsonResult GetEjerciciosFisicos(int? id, DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar, int? TipoEjercicioBuscarID)
     {

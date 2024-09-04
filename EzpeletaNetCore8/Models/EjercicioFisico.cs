@@ -50,6 +50,8 @@ namespace EzpeletaNetCore8.Models
         public string? TipoEjercicioNombre {get;set;}
         public DateTime Inicio { get; set; }
         public string? InicioString { get; set; }
+
+        public TimeSpan IntervaloEjercicio { get; set; }
          public DateTime Fin { get; set; }
         public string? FinString { get; set; }
         public EstadoEmocional EstadoEmocionalInicio {get; set; } 

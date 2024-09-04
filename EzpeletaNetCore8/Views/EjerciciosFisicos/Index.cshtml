@@ -69,7 +69,7 @@
   <div class="col-md-2">
     <label class="form-label">Desde</label>
     <input type="datetime-local" id="FechaDesdeBuscar" onchange="ListadoEjercicios()" class="form-control"
-      value="01/01/2000" />
+      value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" />
   </div>
   <div class="col-md-2">
     <label class="form-label">Hasta</label>
@@ -99,7 +99,7 @@
 
 </div>
 
-<style>
+@* <style>
 .table-wrapper {
   width: 100%;
   height: 200px; /* Altura de ejemplo */
@@ -117,7 +117,7 @@
   top: 0;
   left: 0;
 }
-</style>
+</style> *@
 
 <div class="table-wrapper">
 <table id="tabla-imprimir" class="table table-light table-bordered table-striped table-condensed">
