@@ -20,6 +20,11 @@
 </div>
 
 
+  <button type="button" class="btn btn-success" onclick="NuevoRegistro()" data-bs-toggle="modal"
+    data-bs-target="#ModalEjercicioFisico">
+    <i class="fa-solid fa-square-plus"></i> Nuevo
+  </button>
+
 
 
 <div class="table-wrapper">
@@ -40,6 +45,9 @@
 </table>
 </div>
 
+<partial name="~/Views/EjerciciosFisicos/_ModalEjercicioFisico.cshtml" />
+
 @section Scripts {
+ <script src="~/js/ejerciciosfisicos-1.0.0.js"></script>
   <script src="~/js/ejerciciosPorTipo-1.0.0.js"></script>
 }
