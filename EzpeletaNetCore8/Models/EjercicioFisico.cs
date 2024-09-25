@@ -19,7 +19,10 @@ namespace EzpeletaNetCore8.Models
         public EstadoEmocional EstadoEmocionalFin {get; set; } 
         public string? Observaciones {get; set; }
 
+        public int LugarID { get; set; }
+
         public virtual TipoEjercicio TipoEjercicio { get; set; }
+        //public virtual Lugar Lugar { get; set; }
     }
 
     public enum EstadoEmocional{
