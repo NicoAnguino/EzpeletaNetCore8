@@ -20,3 +20,10 @@ public class VistaTipoEjercicio
      public List<VistaEjercicioFisico>? ListadoEjercicios { get; set; }
 }
 
+public class VistaLugarEjercicios
+{   
+     public int LugarID { get; set; }
+     public string? Descripcion { get; set; }
+     public List<VistaEjercicioFisico>? ListadoEjercicios { get; set; }
+}
+

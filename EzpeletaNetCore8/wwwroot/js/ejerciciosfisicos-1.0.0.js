@@ -5,14 +5,16 @@ function ListadoEjercicios(){
     let fechaDesdeBuscar = $("#FechaDesdeBuscar").val();
     let fechaHastaBuscar = $("#FechaHastaBuscar").val();
     let tipoEjercicioBuscarID = $("#TipoEjercicioBuscarID").val();
+    let lugarBuscarID = $("#LugarBuscarID").val();
     $.ajax({
         // la URL para la petición
         url: '../../EjerciciosFisicos/GetEjerciciosFisicos',
         // la información a enviar
         // (también es posible utilizar una cadena de datos)
         data: { FechaDesdeBuscar: fechaDesdeBuscar,
-            FechaHastaBuscar:fechaHastaBuscar,
-            TipoEjercicioBuscarID:tipoEjercicioBuscarID
+            FechaHastaBuscar: fechaHastaBuscar,
+            TipoEjercicioBuscarID: tipoEjercicioBuscarID,
+            LugarBuscarID: lugarBuscarID
          },
         // especifica si será una petición POST o GET
         type: 'POST',
@@ -32,6 +34,7 @@ function ListadoEjercicios(){
                 contenidoTabla += `
                 <tr>
                     <td class="anchoCelda">${ejercicioFisico.tipoEjercicioNombre}</td>
+                    <td class="anchoCelda">${ejercicioFisico.lugarNombre}</td>
                     <td class="text-center anchoCelda">${ejercicioFisico.inicioString}</td>
                     <td class="anchoCelda">${ejercicioFisico.estadoEmocionalInicioString}</td>
                     <td class="text-center anchoCelda">${ejercicioFisico.finString}</td>
@@ -66,6 +69,7 @@ function ListadoEjercicios(){
 function LimpiarModal(){
     document.getElementById("EjercicioFisicoID").value = 0;
     document.getElementById("TipoEjercicioID").value = 0;
+    document.getElementById("LugarID").value = 0;
     document.getElementById("EstadoEmocionalInicio").value = 0;
     document.getElementById("EstadoEmocionalFin").value = 0;
     document.getElementById("Observaciones").value = "";
@@ -94,6 +98,7 @@ function AbrirModalEditar(ejercicioFisicoID){
 
             document.getElementById("EjercicioFisicoID").value = ejercicioFisicoID;
             document.getElementById("TipoEjercicioID").value = ejercicioFisico.tipoEjercicioID;
+            document.getElementById("LugarID").value = ejercicioFisico.lugarID;
             document.getElementById("EstadoEmocionalInicio").value = ejercicioFisico.estadoEmocionalInicio;
             document.getElementById("EstadoEmocionalFin").value = ejercicioFisico.estadoEmocionalFin;
             document.getElementById("FechaInicio").value = ejercicioFisico.inicio;
@@ -117,6 +122,7 @@ function GuardarRegistro(){
 
     let ejercicioFisicoID = document.getElementById("EjercicioFisicoID").value;
     let tipoEjercicioID = document.getElementById("TipoEjercicioID").value;
+    let lugarID = document.getElementById("LugarID").value;
     let estadoEmocionalInicio = document.getElementById("EstadoEmocionalInicio").value;
     let estadoEmocionalFin = document.getElementById("EstadoEmocionalFin").value;
     let fechaInicio = document.getElementById("FechaInicio").value;
@@ -131,7 +137,8 @@ function GuardarRegistro(){
         url: '../../EjerciciosFisicos/GuardarEjercicio',
         // la información a enviar
         // (también es posible utilizar una cadena de datos)
-        data: { ejercicioFisicoID: ejercicioFisicoID, tipoEjercicioID: tipoEjercicioID, estadoEmocionalInicio: estadoEmocionalInicio,
+        data: { ejercicioFisicoID: ejercicioFisicoID, tipoEjercicioID: tipoEjercicioID, lugarID: lugarID, 
+            estadoEmocionalInicio: estadoEmocionalInicio,
             estadoEmocionalFin: estadoEmocionalFin, fechaInicio: fechaInicio,fechaFin:fechaFin,observaciones:observaciones
         },
         // especifica si será una petición POST o GET

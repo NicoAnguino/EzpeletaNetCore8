@@ -22,7 +22,7 @@ namespace EzpeletaNetCore8.Models
         public int LugarID { get; set; }
 
         public virtual TipoEjercicio TipoEjercicio { get; set; }
-        //public virtual Lugar Lugar { get; set; }
+        public virtual Lugar Lugar { get; set; }
     }
 
     public enum EstadoEmocional{
@@ -51,6 +51,8 @@ namespace EzpeletaNetCore8.Models
         public int EjercicioFisicoID { get; set; }
         public int TipoEjercicioID { get; set; }
         public string? TipoEjercicioNombre {get;set;}
+        public int LugarID { get; set; }
+        public string? LugarNombre { get; set; }
         public DateTime Inicio { get; set; }
         public string? InicioString { get; set; }
 

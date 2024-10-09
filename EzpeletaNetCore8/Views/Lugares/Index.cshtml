@@ -1,0 +1,56 @@
+﻿@{
+  ViewData["Title"] = "Lugares";
+}
+
+<div class="text-center">
+  <h1 class="display-4">Lugares</h1>
+</div>
+
+<!-- Button trigger modal -->
+<div class="mb-2">
+  <button type="button" class="btn btn-success" onclick="NuevoRegistro()" data-bs-toggle="modal" data-bs-target="#ModalLugar">
+    <i class="fa-solid fa-square-plus"></i> Nuevo
+  </button>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="ModalLugar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalTitulo"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <input type="hidden" id="LugarID" value="0"/>
+            <label for="descripcion" class="form-label">Descripción</label>
+            <input type="text" class="form-control" id="descripcion" style="text-transform:uppercase" placeholder="Nombre">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="LimpiarModal()" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" onclick="GuardarRegistro()" class="btn btn-success">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<table class="table table-sm table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>Descripción</th>
+      <th style="width: 70px"></th>
+      <th style="width: 70px"></th>
+    </tr>
+  </thead>
+  <tbody id="tbody-lugares">
+  </tbody>
+</table>
+
+@section Scripts {
+  <script src="~/js/lugares-1.0.0.js"></script>
+}

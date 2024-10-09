@@ -25,6 +25,14 @@
         @onchange = "ListadoEjercicios()"
       })
   </div>
+   <div class="col-md-2">
+    <label class="form-label">Lugar</label>
+    @Html.DropDownList("LugarBuscarID", null, htmlAttributes: new
+      {
+        @class = "form-control",
+        @onchange = "ListadoEjercicios()"
+      })
+  </div>
 </div>
 
 
@@ -65,6 +73,7 @@
   <thead>
     <tr>
       <th class="anchoCelda">Tipo de Ejercicio</th>
+      <th class="anchoCelda">Lugar</th>
       <th class="text-center anchoCelda">Inicio</th>
       <th class="anchoCelda">Estado Emocional</th>
       <th class="text-center anchoCelda">Fin</th>
