@@ -19,9 +19,98 @@ public class EjerciciosFisicosController : Controller
     }
 
 
+    public IActionResult InformeGeneral()
+    {
+        return View();
+    }
+
+    public JsonResult ArmarInformeGeneral(DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar)
+    {
+        //INICIALIZAMOS EL LISTADO DE ELEMENTOS VACIOS
+        List<ListadoEventosN1> ListadoEventosN1 = new List<ListadoEventosN1>();
+
+        //BUSCAMOS EL LISTADO COMPLETO DE EJERCICIOS FISICOS
+        var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).Include(t => t.Lugar).ToList();
+
+        //FILTRAMOS POR FECHA EN EL CASO DE QUE SEAN DISTINTOS DE NULO
+        if (FechaDesdeBuscar != null && FechaHastaBuscar != null)
+        {
+            ejerciciosFisicos = ejerciciosFisicos.Where(t => t.Inicio >= FechaDesdeBuscar && t.Inicio <= FechaHastaBuscar).ToList();
+        }
+
+        //RECORREMOS LOS EJERCICIOS ORDENADOS POR DESCRIPCION DE TIPO DE EJERCICIO Y LUEGO POR FECHA DE INICIO
+        foreach (var ejercicio in ejerciciosFisicos.OrderBy(t => t.Inicio))
+        {
+            //PRIMERO AGRUPAR POR EVENTO
+            var evento = ListadoEventosN1.Where(e => e.EventoID == ejercicio.EventoID).SingleOrDefault();
+            if (evento == null)
+            {
+
+                var infoEvento = _context.Eventos.Where(e => e.EventoID == ejercicio.EventoID).Single();
+                evento = new ListadoEventosN1
+                {
+                    EventoID = ejercicio.EventoID,
+                    Descripcion = infoEvento.Descripcion,
+                    ListadoLugaresN2 = new List<ListadoLugaresN2>()
+                };
+                ListadoEventosN1.Add(evento);
+            }
+
+            //LUEGO POR LUGAR
+            var lugar = evento.ListadoLugaresN2.Where(l => l.LugarID == ejercicio.LugarID).SingleOrDefault();
+            if (lugar == null)
+            {
+                lugar = new ListadoLugaresN2
+                {
+                    LugarID = ejercicio.LugarID,
+                    Descripcion = ejercicio.Lugar.Descripcion,
+                    ListadoTipoEjerciciosN3 = new List<ListadoTipoEjerciciosN3>()
+                };
+                evento.ListadoLugaresN2.Add(lugar);
+            }
+
+            //LUEGO POR TIPO DE EJERCICIO
+            var tipoEjercicio = lugar.ListadoTipoEjerciciosN3.Where(t => t.TipoEjercicioID == ejercicio.TipoEjercicioID).SingleOrDefault();
+            if (tipoEjercicio == null)
+            {
+                //SI NO EXISTE, AGREGARLO AL LISTADO 
+                tipoEjercicio = new ListadoTipoEjerciciosN3
+                {
+                    TipoEjercicioID = ejercicio.TipoEjercicioID,
+                    Descripcion = ejercicio.TipoEjercicio.Descripcion,
+                    VistaEjercicioFisico = new List<VistaEjercicioFisico>()
+                };
+                lugar.ListadoTipoEjerciciosN3.Add(tipoEjercicio);
+            }
+
+            //LUEGO ARMAMOS EL OBJETO DE SEGUNDO NIVEL CON LOS DATOS DEL EJERCICIO
+            var vistaEjercicio = new VistaEjercicioFisico
+            {
+                EjercicioFisicoID = ejercicio.EjercicioFisicoID,
+
+                Inicio = ejercicio.Inicio,
+                InicioString = ejercicio.Inicio.ToString("dd/MM/yyyy HH:mm"),
+                Fin = ejercicio.Fin,
+                FinString = ejercicio.Fin.ToString("dd/MM/yyyy HH:mm"),
+                IntervaloEjercicio = ejercicio.IntervaloEjercicio,
+                EstadoEmocionalFin = ejercicio.EstadoEmocionalFin,
+                EstadoEmocionalFinString = ejercicio.EstadoEmocionalFin.ToString().ToUpper(),
+                EstadoEmocionalInicio = ejercicio.EstadoEmocionalInicio,
+                EstadoEmocionalInicioString = ejercicio.EstadoEmocionalInicio.ToString().ToUpper(),
+                //ATENCIÓN A LA CONDICION PARA MOSTRAR O NO LA OBSERVACIÓN
+                Observaciones = String.IsNullOrEmpty(ejercicio.Observaciones) ? "" : ejercicio.Observaciones
+            };
+
+            //LUEGO AGREGAMOS ESE OBJETO DE EJERCICIO AL LISTADO DE EJERCICIOS DE ESE TIPO DE EJERCICIO CORRESPONDIENTE
+            tipoEjercicio.VistaEjercicioFisico.Add(vistaEjercicio);
+        }
+
+        return Json(ListadoEventosN1);
+    }
+
     public IActionResult EjerciciosPorTipo()
     {
-          // Crear una lista de SelectListItem que incluya el elemento adicional
+        // Crear una lista de SelectListItem que incluya el elemento adicional
         var selectListItems = new List<SelectListItem>
         {
             new SelectListItem { Value = "0", Text = "[SELECCIONE...]" }
@@ -42,7 +131,7 @@ public class EjerciciosFisicosController : Controller
         ViewBag.EstadoEmocionalFin = selectListItems.OrderBy(t => t.Text).ToList();
 
         var tipoEjercicios = _context.TipoEjercicios.ToList();
-        var tiposEjerciciosBuscar = tipoEjercicios.ToList();  
+        var tiposEjerciciosBuscar = tipoEjercicios.ToList();
 
         tipoEjercicios.Add(new TipoEjercicio { TipoEjercicioID = 0, Descripcion = "[SELECCIONE...]" });
         ViewBag.TipoEjercicioID = new SelectList(tipoEjercicios.OrderBy(c => c.Descripcion), "TipoEjercicioID", "Descripcion");
@@ -63,18 +152,19 @@ public class EjerciciosFisicosController : Controller
         var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).ToList();
 
         //FILTRAMOS POR FECHA EN EL CASO DE QUE SEAN DISTINTOS DE NULO
-        if(FechaDesdeBuscar != null && FechaHastaBuscar != null)
+        if (FechaDesdeBuscar != null && FechaHastaBuscar != null)
         {
-             ejerciciosFisicos = ejerciciosFisicos.Where(t => t.Inicio >= FechaDesdeBuscar && t.Inicio <= FechaHastaBuscar).ToList();
+            ejerciciosFisicos = ejerciciosFisicos.Where(t => t.Inicio >= FechaDesdeBuscar && t.Inicio <= FechaHastaBuscar).ToList();
         }
 
         //RECORREMOS LOS EJERCICIOS ORDENADOS POR DESCRIPCION DE TIPO DE EJERCICIO Y LUEGO POR FECHA DE INICIO
         foreach (var e in ejerciciosFisicos.OrderBy(t => t.Inicio).OrderBy(t => t.TipoEjercicio.Descripcion))
         {
-           
+
             //POR CADA EJERCICIO BUSCAR SI EXISTE EN EL LISTADO EL TIPO DE EJERCICIO 
             var tipoEjercicioMostrar = tiposEjerciosMostrar.Where(t => t.TipoEjercicioID == e.TipoEjercicioID).SingleOrDefault();
-            if(tipoEjercicioMostrar == null){
+            if (tipoEjercicioMostrar == null)
+            {
                 //SI NO EXISTE, AGREGARLO AL LISTADO 
                 tipoEjercicioMostrar = new VistaTipoEjercicio
                 {
@@ -85,38 +175,38 @@ public class EjerciciosFisicosController : Controller
                 tiposEjerciosMostrar.Add(tipoEjercicioMostrar);
             }
 
-            
+
             //LUEGO ARMAMOS EL OBJETO DE SEGUNDO NIVEL CON LOS DATOS DEL EJERCICIO
             var vistaEjercicio = new VistaEjercicioFisico
             {
-                 EjercicioFisicoID = e.EjercicioFisicoID,
-            TipoEjercicioID = e.TipoEjercicioID,
-            TipoEjercicioNombre = e.TipoEjercicio.Descripcion,
-            Inicio = e.Inicio,
-            InicioString = e.Inicio.ToString("dd/MM/yyyy HH:mm"),
-            Fin = e.Fin,
-            FinString = e.Fin.ToString("dd/MM/yyyy HH:mm"),
-            IntervaloEjercicio = e.IntervaloEjercicio,
-            EstadoEmocionalFin = e.EstadoEmocionalFin,
-            EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString().ToUpper(),
-            EstadoEmocionalInicio = e.EstadoEmocionalInicio,
-            EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString().ToUpper(),
+                EjercicioFisicoID = e.EjercicioFisicoID,
+                TipoEjercicioID = e.TipoEjercicioID,
+                TipoEjercicioNombre = e.TipoEjercicio.Descripcion,
+                Inicio = e.Inicio,
+                InicioString = e.Inicio.ToString("dd/MM/yyyy HH:mm"),
+                Fin = e.Fin,
+                FinString = e.Fin.ToString("dd/MM/yyyy HH:mm"),
+                IntervaloEjercicio = e.IntervaloEjercicio,
+                EstadoEmocionalFin = e.EstadoEmocionalFin,
+                EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString().ToUpper(),
+                EstadoEmocionalInicio = e.EstadoEmocionalInicio,
+                EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString().ToUpper(),
 
-            //ATENCIÓN A LA CONDICION PARA MOSTRAR O NO LA OBSERVACIÓN
-            Observaciones = String.IsNullOrEmpty(e.Observaciones) ? "" : e.Observaciones
+                //ATENCIÓN A LA CONDICION PARA MOSTRAR O NO LA OBSERVACIÓN
+                Observaciones = String.IsNullOrEmpty(e.Observaciones) ? "" : e.Observaciones
             };
 
             //LUEGO AGREGAMOS ESE OBJETO DE EJERCICIO AL LISTADO DE EJERCICIOS DE ESE TIPO DE EJERCICIO CORRESPONDIENTE
-            tipoEjercicioMostrar.ListadoEjercicios.Add(vistaEjercicio);          
+            tipoEjercicioMostrar.ListadoEjercicios.Add(vistaEjercicio);
         }
 
-       return Json(tiposEjerciosMostrar);
+        return Json(tiposEjerciosMostrar);
     }
 
 
- public IActionResult EjerciciosPorLugar()
+    public IActionResult EjerciciosPorLugar()
     {
-          // Crear una lista de SelectListItem que incluya el elemento adicional
+        // Crear una lista de SelectListItem que incluya el elemento adicional
         var selectListItems = new List<SelectListItem>
         {
             new SelectListItem { Value = "0", Text = "[SELECCIONE...]" }
@@ -157,18 +247,19 @@ public class EjerciciosFisicosController : Controller
         var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).Include(t => t.Lugar).ToList();
 
         //FILTRAMOS POR FECHA EN EL CASO DE QUE SEAN DISTINTOS DE NULO
-        if(FechaDesdeBuscar != null && FechaHastaBuscar != null)
+        if (FechaDesdeBuscar != null && FechaHastaBuscar != null)
         {
-             ejerciciosFisicos = ejerciciosFisicos.Where(t => t.Inicio >= FechaDesdeBuscar && t.Inicio <= FechaHastaBuscar).ToList();
+            ejerciciosFisicos = ejerciciosFisicos.Where(t => t.Inicio >= FechaDesdeBuscar && t.Inicio <= FechaHastaBuscar).ToList();
         }
 
         //RECORREMOS LOS EJERCICIOS ORDENADOS POR DESCRIPCION DE TIPO DE EJERCICIO Y LUEGO POR FECHA DE INICIO
         foreach (var e in ejerciciosFisicos.OrderBy(t => t.Inicio).OrderBy(t => t.Lugar.Descripcion))
         {
-           
+
             //POR CADA EJERCICIO BUSCAR SI EXISTE EN EL LISTADO EL TIPO DE EJERCICIO 
             var tipoEjercicioMostrar = tiposEjerciosMostrar.Where(t => t.LugarID == e.LugarID).SingleOrDefault();
-            if(tipoEjercicioMostrar == null){
+            if (tipoEjercicioMostrar == null)
+            {
                 //SI NO EXISTE, AGREGARLO AL LISTADO 
                 tipoEjercicioMostrar = new VistaLugarEjercicios
                 {
@@ -179,37 +270,37 @@ public class EjerciciosFisicosController : Controller
                 tiposEjerciosMostrar.Add(tipoEjercicioMostrar);
             }
 
-            
+
             //LUEGO ARMAMOS EL OBJETO DE SEGUNDO NIVEL CON LOS DATOS DEL EJERCICIO
             var vistaEjercicio = new VistaEjercicioFisico
             {
-                 EjercicioFisicoID = e.EjercicioFisicoID,
-            TipoEjercicioID = e.TipoEjercicioID,
-            TipoEjercicioNombre = e.TipoEjercicio.Descripcion,
-            Inicio = e.Inicio,
-            InicioString = e.Inicio.ToString("dd/MM/yyyy HH:mm"),
-            Fin = e.Fin,
-            FinString = e.Fin.ToString("dd/MM/yyyy HH:mm"),
-            IntervaloEjercicio = e.IntervaloEjercicio,
-            EstadoEmocionalFin = e.EstadoEmocionalFin,
-            EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString().ToUpper(),
-            EstadoEmocionalInicio = e.EstadoEmocionalInicio,
-            EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString().ToUpper(),
+                EjercicioFisicoID = e.EjercicioFisicoID,
+                TipoEjercicioID = e.TipoEjercicioID,
+                TipoEjercicioNombre = e.TipoEjercicio.Descripcion,
+                Inicio = e.Inicio,
+                InicioString = e.Inicio.ToString("dd/MM/yyyy HH:mm"),
+                Fin = e.Fin,
+                FinString = e.Fin.ToString("dd/MM/yyyy HH:mm"),
+                IntervaloEjercicio = e.IntervaloEjercicio,
+                EstadoEmocionalFin = e.EstadoEmocionalFin,
+                EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString().ToUpper(),
+                EstadoEmocionalInicio = e.EstadoEmocionalInicio,
+                EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString().ToUpper(),
 
-            //ATENCIÓN A LA CONDICION PARA MOSTRAR O NO LA OBSERVACIÓN
-            Observaciones = String.IsNullOrEmpty(e.Observaciones) ? "" : e.Observaciones
+                //ATENCIÓN A LA CONDICION PARA MOSTRAR O NO LA OBSERVACIÓN
+                Observaciones = String.IsNullOrEmpty(e.Observaciones) ? "" : e.Observaciones
             };
 
             //LUEGO AGREGAMOS ESE OBJETO DE EJERCICIO AL LISTADO DE EJERCICIOS DE ESE TIPO DE EJERCICIO CORRESPONDIENTE
-            tipoEjercicioMostrar.ListadoEjercicios.Add(vistaEjercicio);          
+            tipoEjercicioMostrar.ListadoEjercicios.Add(vistaEjercicio);
         }
 
-       return Json(tiposEjerciosMostrar);
+        return Json(tiposEjerciosMostrar);
     }
 
 
     public IActionResult Index()
-    {   
+    {
         // Crear una lista de SelectListItem que incluya el elemento adicional
         var selectListItems = new List<SelectListItem>
         {
@@ -261,7 +352,7 @@ public class EjerciciosFisicosController : Controller
     }
 
 
-  
+
 
     public JsonResult GetEjerciciosFisicos(int? id, DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar, int? TipoEjercicioBuscarID, int? LugarBuscarID)
     {
@@ -271,8 +362,9 @@ public class EjerciciosFisicosController : Controller
             ejerciciosFisicos = ejerciciosFisicos.Where(t => t.EjercicioFisicoID == id).ToList();
         }
 
-        if(FechaDesdeBuscar != null && FechaHastaBuscar != null){
-             ejerciciosFisicos = ejerciciosFisicos.Where(t => t.Inicio >= FechaDesdeBuscar && t.Inicio <= FechaHastaBuscar).ToList();
+        if (FechaDesdeBuscar != null && FechaHastaBuscar != null)
+        {
+            ejerciciosFisicos = ejerciciosFisicos.Where(t => t.Inicio >= FechaDesdeBuscar && t.Inicio <= FechaHastaBuscar).ToList();
         }
 
         if (TipoEjercicioBuscarID != null && TipoEjercicioBuscarID != 0)
@@ -322,8 +414,8 @@ public class EjerciciosFisicosController : Controller
         }
 
         //VALIDAMOS QUE LA FECHA DE INICIO NO SEA MAYOR A LA DE FIN
-        if(error == 0)
-        {        
+        if (error == 0)
+        {
             if (ejercicioFisicoID == 0)
             {
                 //4- GUARDAR EL EJERCICIO
