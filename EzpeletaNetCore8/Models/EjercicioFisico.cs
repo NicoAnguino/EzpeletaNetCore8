@@ -21,8 +21,11 @@ namespace EzpeletaNetCore8.Models
 
         public int LugarID { get; set; }
 
+        public int EventoID { get; set; }
+
         public virtual TipoEjercicio TipoEjercicio { get; set; }
         public virtual Lugar Lugar { get; set; }
+        //public virtual Evento Evento { get; set; }
     }
 
     public enum EstadoEmocional{

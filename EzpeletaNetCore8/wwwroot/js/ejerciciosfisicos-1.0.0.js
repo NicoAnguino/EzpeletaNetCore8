@@ -123,6 +123,7 @@ function GuardarRegistro(){
     let ejercicioFisicoID = document.getElementById("EjercicioFisicoID").value;
     let tipoEjercicioID = document.getElementById("TipoEjercicioID").value;
     let lugarID = document.getElementById("LugarID").value;
+    let eventoID = document.getElementById("EventoID").value;
     let estadoEmocionalInicio = document.getElementById("EstadoEmocionalInicio").value;
     let estadoEmocionalFin = document.getElementById("EstadoEmocionalFin").value;
     let fechaInicio = document.getElementById("FechaInicio").value;
@@ -138,7 +139,7 @@ function GuardarRegistro(){
         // la información a enviar
         // (también es posible utilizar una cadena de datos)
         data: { ejercicioFisicoID: ejercicioFisicoID, tipoEjercicioID: tipoEjercicioID, lugarID: lugarID, 
-            estadoEmocionalInicio: estadoEmocionalInicio,
+            eventoID: eventoID, estadoEmocionalInicio: estadoEmocionalInicio,
             estadoEmocionalFin: estadoEmocionalFin, fechaInicio: fechaInicio,fechaFin:fechaFin,observaciones:observaciones
         },
         // especifica si será una petición POST o GET

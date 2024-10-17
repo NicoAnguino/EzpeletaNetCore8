@@ -10,7 +10,7 @@
   <div class="col-md-2">
     <label class="form-label">Desde</label>
     <input type="datetime-local" id="FechaDesdeBuscar" onchange="ListadoEjercicios()" class="form-control"
-      value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" />
+      value="@DateTime.Now.Date.ToString("yyyy-MM-dd HH:mm")" />
   </div>
   <div class="col-md-2">
     <label class="form-label">Hasta</label>
