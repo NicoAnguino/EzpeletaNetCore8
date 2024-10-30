@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace EzpeletaNetCore8.Controllers;
 
-[Authorize]
+// [Authorize]
 public class TipoEjerciciosController : Controller
 {
     private ApplicationDbContext _context;

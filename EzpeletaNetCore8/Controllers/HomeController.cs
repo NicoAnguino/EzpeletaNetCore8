@@ -14,24 +14,26 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private ApplicationDbContext _context;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly RoleManager<IdentityRole> _rolManager;
+    // private readonly UserManager<IdentityUser> _userManager;
+    // private readonly RoleManager<IdentityRole> _rolManager;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> rolManager)
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context
+    // , UserManager<IdentityUser> userManager, RoleManager<IdentityRole> rolManager
+    )
     {
         _logger = logger;
         _context = context;
-        _userManager = userManager;
-        _rolManager = rolManager;
+        // _userManager = userManager;
+        // _rolManager = rolManager;
     }
 
     [Authorize]
     public async Task<IActionResult> Index()
     {
         //BUSCAR EL ID DEL USUARIO LOGUEADO
-        var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+        //var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
         //OBJETO PARA PASARLO A VISTA PARA MOSTRAR QUE FUNCIONA
-        ViewBag.UsuarioID = usuarioLogueadoID;
+        ViewBag.UsuarioID = "";
 
         var tipoEjercicios = _context.TipoEjercicios.ToList();
         ViewBag.TipoEjercicioID = new SelectList(tipoEjercicios.OrderBy(c => c.Descripcion), "TipoEjercicioID", "Descripcion");
@@ -206,23 +208,23 @@ public class HomeController : Controller
     {
             //CREAR ROLES SI NO EXISTEN
             var nombreRolCrearExiste = _context.Roles.Where(r => r.Name == "ADMINISTRADOR").SingleOrDefault();
-            if (nombreRolCrearExiste == null)
-            {
-                var roleResult = await _rolManager.CreateAsync(new IdentityRole("ADMINISTRADOR"));
-            }
+            // if (nombreRolCrearExiste == null)
+            // {
+            //     var roleResult = await _rolManager.CreateAsync(new IdentityRole("ADMINISTRADOR"));
+            // }
 
             //CREAR USUARIO PRINCIPAL
             bool creado = false;
             //BUSCAR POR MEDIO DE CORREO ELECTRONICO SI EXISTE EL USUARIO
             var usuario = _context.Users.Where(u => u.Email == "admin@sistema.com").SingleOrDefault();
-            if (usuario == null)
-            {
-                var user = new IdentityUser { UserName = "admin@sistema.com", Email = "admin@sistema.com" };
-                var result = await _userManager.CreateAsync(user, "password");
+            // if (usuario == null)
+            // {
+            //     var user = new IdentityUser { UserName = "admin@sistema.com", Email = "admin@sistema.com" };
+            //     var result = await _userManager.CreateAsync(user, "password");
 
-                await _userManager.AddToRoleAsync(user, "ADMINISTRADOR");
-                creado = result.Succeeded;
-            }
+            //     await _userManager.AddToRoleAsync(user, "ADMINISTRADOR");
+            //     creado = result.Succeeded;
+            // }
 
             //CODIGO PARA BUSCAR EL USUARIO EN CASO DE NECESITARLO
             var superusuario = _context.Users.Where(r => r.Email == "admin@sistema.com").SingleOrDefault();

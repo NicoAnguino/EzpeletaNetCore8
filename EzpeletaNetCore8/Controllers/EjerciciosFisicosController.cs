@@ -19,6 +19,10 @@ public class EjerciciosFisicosController : Controller
     }
 
 
+    public IActionResult Impresion()
+    {
+        return View();
+    }
     public IActionResult InformeGeneral()
     {
         return View();
