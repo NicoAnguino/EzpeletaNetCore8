@@ -23,6 +23,8 @@ namespace EzpeletaNetCore8.Models
 
         public int EventoID { get; set; }
 
+        public string? UsuarioID { get; set; }  
+
         public virtual TipoEjercicio TipoEjercicio { get; set; }
         public virtual Lugar Lugar { get; set; }
         //public virtual Evento Evento { get; set; }
@@ -67,6 +69,7 @@ namespace EzpeletaNetCore8.Models
         public string? EstadoEmocionalInicioString {get; set; } 
         public string? EstadoEmocionalFinString {get; set; } 
         public string? Observaciones {get; set; }
+        public decimal CaloriasQuemadas {get; set; }    
     }
     public class VistaSumaEjercicioFisico
     {

@@ -32,6 +32,7 @@ function ListadoEjercicios(){
                     <td class="text-center anchoCelda"></td>
                     <td class="anchoCelda"></td>
                     <td class="text-center anchoCelda"></td>
+                    <td class="text-center anchoCelda"></td>
                     <td class="anchoCelda"></td>
                     <td class="text-center anchoCelda anchoBotones"></td>
                     <td class="text-center anchoBotones"></td>
@@ -45,6 +46,7 @@ function ListadoEjercicios(){
                         <td class="text-center anchoCelda">${ejercicioFisico.inicioString}</td>
                         <td class="text-center anchoCelda">${ejercicioFisico.finString}</td>
                         <td class="text-center anchoCelda">${ejercicioFisico.intervaloEjercicio}</td>
+                           <td style="text-align: right" class="anchoCelda">${ejercicioFisico.caloriasQuemadas.toFixed(2)}</td>
                         <td class="anchoCelda">${ejercicioFisico.estadoEmocionalInicioString}</td>                  
                         <td class="anchoCelda">${ejercicioFisico.estadoEmocionalFinString}</td>
                         <td class="text-center anchoCelda anchoBotones">${ejercicioFisico.observaciones}</td>

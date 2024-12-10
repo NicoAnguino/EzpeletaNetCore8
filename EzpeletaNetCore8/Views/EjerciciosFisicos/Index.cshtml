@@ -78,6 +78,8 @@
       <th class="anchoCelda">Estado Emocional</th>
       <th class="text-center anchoCelda">Fin</th>
       <th class="anchoCelda">Estado Emocional</th>
+           <th class="text-center anchoCelda">Duración</th>
+      <th style="text-align: right" class="anchoCelda">Calorías Consumidas</th>
       <th style="width: 70px"></th>
       <th style="width: 70px"></th>
     </tr>
@@ -95,8 +97,8 @@
 
   <script>
     function Imprimir() {
-      var doc = new jsPDF();
-      //var doc = new jsPDF('l', 'mm', [297, 210]);
+      //var doc = new jsPDF();
+      var doc = new jsPDF('l', 'mm', [297, 210]);
 
       var totalPagesExp = "{total_pages_count_string}";
       var pageContent = function (data) {
@@ -134,22 +136,31 @@
           //styles: { fillColor: [255, 0, 0] }, //COLOR ENCABEZADO
           columnStyles: {
             0: {
-              halign: 'center',
+              halign: 'left',
               cellWidth: 'auto',
-              fontSize: 7,
+              fontSize: 8,
               //fillColor: [0, 255, 0] 
             },
-            1: { fontSize: 7, overflow: 'hidden' },
+            1: { fontSize: 8, overflow: 'hidden' },
+            2: { halign: 'center', fontSize: 8, overflow: 'hidden' },
+            3: { fontSize: 8, overflow: 'hidden' },
+            4: { halign: 'center', fontSize: 8, overflow: 'hidden' },
             5: {
-              halign: 'center',
+              halign: 'left',
               cellWidth: 'auto',
-              fontSize: 7,
+              fontSize: 8,
               //fillColor: [0, 255, 0] 
             },
             6: {
-              halign: 'center',
+              halign: 'right',
               cellWidth: 'auto',
-              fontSize: 7,
+              fontSize: 8,
+              //fillColor: [0, 255, 0] 
+            },
+            7: {
+              halign: 'right',
+              cellWidth: 'auto',
+              fontSize: 8,
               //fillColor: [0, 255, 0] 
             },
 

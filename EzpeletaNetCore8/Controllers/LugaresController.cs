@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using EzpeletaNetCore8.Models;
 using EzpeletaNetCore8.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace EzpeletaNetCore8.Controllers;
 
@@ -9,11 +10,13 @@ namespace EzpeletaNetCore8.Controllers;
 public class LugaresController : Controller
 {
     private ApplicationDbContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
 
     //CONSTRUCTOR
-    public LugaresController(ApplicationDbContext context)
+    public LugaresController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     public IActionResult Index()
@@ -23,8 +26,9 @@ public class LugaresController : Controller
 
     public JsonResult ListadoLugares(int? id)
     {
+         var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
         //DEFINIMOS UNA VARIABLE EN DONDE GUARDAMOS EL LISTADO COMPLETO DE TIPOS DE EJERCICIOS
-        var lugares = _context.Lugares.ToList();
+        var lugares = _context.Lugares.Where(l => l.UsuarioID == usuarioLogueadoID).ToList();
 
         //LUEGO PREGUNTAMOS SI EL USUARIO INGRESO UN ID
         //QUIERE DECIR QUE QUIERE UN EJERCICIO EN PARTICULAR
@@ -39,6 +43,8 @@ public class LugaresController : Controller
 
     public JsonResult GuardarLugar(int lugarID, string descripcion)
     {
+           var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+
         //1- VERIFICAMOS SI REALMENTE INGRESO ALGUN CARACTER Y LA VARIABLE NO SEA NULL
         // if (descripcion != null && descripcion != "")
         // {
@@ -69,7 +75,8 @@ public class LugaresController : Controller
                     //4- GUARDAR EL TIPO DE EJERCICIO
                     var lugar = new Lugar
                     {
-                        Descripcion = descripcion
+                        Descripcion = descripcion,
+                        UsuarioID = usuarioLogueadoID
                     };
                     _context.Add(lugar);
                     _context.SaveChanges();

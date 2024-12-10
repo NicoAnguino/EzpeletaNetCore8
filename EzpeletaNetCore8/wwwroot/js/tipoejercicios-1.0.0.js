@@ -27,11 +27,13 @@ function ListadoTipoEjercicios(){
                 contenidoTabla += `
                 <tr>
                     <td>${tipoDeEjercicio.descripcion}</td>
+                      <td style="text-align: right">${tipoDeEjercicio.met.toFixed(2)}</td>
                     <td class="text-center">
                     <button type="button" class="btn btn-success btn-sm" onclick="AbrirModalEditar(${tipoDeEjercicio.tipoEjercicioID})">
                     <i class="fa-solid fa-marker"></i>
                     </button>
                     </td>
+                   
                     <td class="text-center">
                     <button type="button" class="btn btn-danger btn-sm" onclick="EliminarRegistro(${tipoDeEjercicio.tipoEjercicioID})">
                     <i class="fa-solid fa-trash"></i>
@@ -65,6 +67,7 @@ function ListadoTipoEjercicios(){
 function LimpiarModal(){
     document.getElementById("TipoEjercicioID").value = 0;
     document.getElementById("descripcion").value = "";
+    document.getElementById("met").value = 0;
 }
 
 function NuevoRegistro(){
@@ -91,6 +94,7 @@ function AbrirModalEditar(tipoEjercicioID){
             document.getElementById("TipoEjercicioID").value = tipoEjercicioID;
             $("#ModalTitulo").text("Editar Tipo de Ejercicio");
             document.getElementById("descripcion").value = tipoDeEjercicio.descripcion;
+            document.getElementById("met").value = tipoDeEjercicio.met.toFixed(2);
             $("#ModalTipoEjercicio").modal("show");
         },
 
@@ -107,6 +111,7 @@ function GuardarRegistro(){
     //GUARDAMOS EN UNA VARIABLE LO ESCRITO EN EL INPUT DESCRIPCION
     let tipoEjercicioID = document.getElementById("TipoEjercicioID").value;
     let descripcion = document.getElementById("descripcion").value;
+    let met = document.getElementById("met").value;
     //POR UN LADO PROGRAMAR VERIFICACIONES DE DATOS EN EL FRONT CUANDO SON DE INGRESO DE VALORES Y NO SE NECESITA VERIFICAR EN BASES DE DATOS
     //LUEGO POR OTRO LADO HACER VERIFICACIONES DE DATOS EN EL BACK, SI EXISTE EL ELEMENTO SI NECESITAMOS LA BASE DE DATOS.
     console.log(descripcion);
@@ -115,7 +120,7 @@ function GuardarRegistro(){
         url: '../../TipoEjercicios/GuardarTipoEjercicio',
         // la información a enviar
         // (también es posible utilizar una cadena de datos)
-        data: { tipoEjercicioID: tipoEjercicioID, descripcion: descripcion},
+        data: { tipoEjercicioID: tipoEjercicioID, descripcion: descripcion, met:met},
         // especifica si será una petición POST o GET
         type: 'POST',
         // el tipo de información que se espera de respuesta

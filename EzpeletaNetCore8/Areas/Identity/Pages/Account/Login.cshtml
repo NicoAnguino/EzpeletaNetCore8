@@ -19,27 +19,27 @@
                 <div class="text-center">
                   <img src="~/img/logo.jpg"
                     style="width: 185px;" alt="logo">
-                  <h4 class="mt-1 mb-5 pb-1">Mantiene tu Cuerpo Activo</h4>
+                  <h4 class="mt-1 mb-4 pb-1">Mantiene tu Cuerpo Activo</h4>
                 </div>
 
                 <form id="account" method="post">
                      <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                   <p>Por favor, ingrese a su cuenta</p>
 
-                  <div data-mdb-input-init class="form-outline mb-4">
+                  <div data-mdb-input-init class="form-outline mb-1">
                     <input asp-for="Input.Email" type="email" id="form2Example11" class="form-control"
                       placeholder="Dirección de correo electrónico" />
                     <label class="form-label" for="form2Example11">Email</label>
                       <span asp-validation-for="Input.Email" class="text-danger"></span>
                   </div>
 
-                  <div data-mdb-input-init class="form-outline mb-4">
+                  <div data-mdb-input-init class="form-outline mb-1">
                     <input asp-for="Input.Password" type="password" id="form2Example22" class="form-control" />
                     <label class="form-label" for="form2Example22">Contraseña</label>
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                   </div>
 
-                  <div class="text-center pt-1 mb-5 pb-1">
+                  <div class="text-center pt-1 mb-2 pb-1">
                     <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block btn-lg gradient-custom-2 mb-3" id="login-submit" type="submit" >Ingresar</button>
                     <a class="text-muted" id="forgot-password" asp-page="./ForgotPassword">¿Olvidaste tu Contraseña?</a>
                   </div>

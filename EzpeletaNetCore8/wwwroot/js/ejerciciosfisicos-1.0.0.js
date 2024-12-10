@@ -39,6 +39,8 @@ function ListadoEjercicios(){
                     <td class="anchoCelda">${ejercicioFisico.estadoEmocionalInicioString}</td>
                     <td class="text-center anchoCelda">${ejercicioFisico.finString}</td>
                     <td class="anchoCelda">${ejercicioFisico.estadoEmocionalFinString}</td>
+                         <td class="text-center anchoCelda">${ejercicioFisico.intervaloEjercicio}</td>
+                                  <td style="text-align: right" class="anchoCelda">${ejercicioFisico.caloriasQuemadas.toFixed(2)}</td>
                     <td class="text-center anchoCelda anchoBotones">
                     <button type="button" class="btn btn-success btn-sm" onclick="AbrirModalEditar(${ejercicioFisico.ejercicioFisicoID})">
                     <i class="fa-solid fa-marker"></i>

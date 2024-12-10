@@ -4,6 +4,7 @@ using EzpeletaNetCore8.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace EzpeletaNetCore8.Controllers;
 
@@ -11,11 +12,13 @@ namespace EzpeletaNetCore8.Controllers;
 public class EjerciciosFisicosController : Controller
 {
     private ApplicationDbContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
 
     //CONSTRUCTOR
-    public EjerciciosFisicosController(ApplicationDbContext context)
+    public EjerciciosFisicosController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
 
@@ -30,11 +33,15 @@ public class EjerciciosFisicosController : Controller
 
     public JsonResult ArmarInformeGeneral(DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar)
     {
+       
+           var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+
+          var deportista = _context.Deportistas.Where(d => d.UsuarioID == usuarioLogueadoID).Single();
         //INICIALIZAMOS EL LISTADO DE ELEMENTOS VACIOS
         List<ListadoEventosN1> ListadoEventosN1 = new List<ListadoEventosN1>();
 
         //BUSCAMOS EL LISTADO COMPLETO DE EJERCICIOS FISICOS
-        var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).Include(t => t.Lugar).ToList();
+        var ejerciciosFisicos = _context.EjerciciosFisicos.Where(e => e.UsuarioID == usuarioLogueadoID).Include(t => t.TipoEjercicio).Include(t => t.Lugar).ToList();
 
         //FILTRAMOS POR FECHA EN EL CASO DE QUE SEAN DISTINTOS DE NULO
         if (FechaDesdeBuscar != null && FechaHastaBuscar != null)
@@ -87,6 +94,11 @@ public class EjerciciosFisicosController : Controller
                 lugar.ListadoTipoEjerciciosN3.Add(tipoEjercicio);
             }
 
+             decimal caloriasQuemadas = decimal.Round(ejercicio.TipoEjercicio.Met * deportista.Peso * Convert.ToDecimal(ejercicio.IntervaloEjercicio.TotalHours) * 1, 2);
+            if(deportista.Genero == Genero.Femenino){
+                caloriasQuemadas = decimal.Round(ejercicio.TipoEjercicio.Met * deportista.Peso * Convert.ToDecimal(ejercicio.IntervaloEjercicio.TotalHours) * Convert.ToDecimal(0.9), 2);
+            }
+
             //LUEGO ARMAMOS EL OBJETO DE SEGUNDO NIVEL CON LOS DATOS DEL EJERCICIO
             var vistaEjercicio = new VistaEjercicioFisico
             {
@@ -101,6 +113,7 @@ public class EjerciciosFisicosController : Controller
                 EstadoEmocionalFinString = ejercicio.EstadoEmocionalFin.ToString().ToUpper(),
                 EstadoEmocionalInicio = ejercicio.EstadoEmocionalInicio,
                 EstadoEmocionalInicioString = ejercicio.EstadoEmocionalInicio.ToString().ToUpper(),
+                CaloriasQuemadas = caloriasQuemadas,
                 //ATENCIÓN A LA CONDICION PARA MOSTRAR O NO LA OBSERVACIÓN
                 Observaciones = String.IsNullOrEmpty(ejercicio.Observaciones) ? "" : ejercicio.Observaciones
             };
@@ -149,11 +162,14 @@ public class EjerciciosFisicosController : Controller
 
     public JsonResult MostrarEjerciciosPorTipo(DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar)
     {
+        var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+
+          var deportista = _context.Deportistas.Where(d => d.UsuarioID == usuarioLogueadoID).Single();
         //INICIALIZAMOS EL LISTADO DE ELEMENTOS VACIOS
         List<VistaTipoEjercicio> tiposEjerciosMostrar = new List<VistaTipoEjercicio>();
 
         //BUSCAMOS EL LISTADO COMPLETO DE EJERCICIOS FISICOS
-        var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).ToList();
+        var ejerciciosFisicos = _context.EjerciciosFisicos.Where(e => e.UsuarioID == usuarioLogueadoID).Include(t => t.TipoEjercicio).ToList();
 
         //FILTRAMOS POR FECHA EN EL CASO DE QUE SEAN DISTINTOS DE NULO
         if (FechaDesdeBuscar != null && FechaHastaBuscar != null)
@@ -179,6 +195,10 @@ public class EjerciciosFisicosController : Controller
                 tiposEjerciosMostrar.Add(tipoEjercicioMostrar);
             }
 
+            decimal caloriasQuemadas = decimal.Round(e.TipoEjercicio.Met * deportista.Peso * Convert.ToDecimal(e.IntervaloEjercicio.TotalHours) * 1, 2);
+            if(deportista.Genero == Genero.Femenino){
+                caloriasQuemadas = decimal.Round(e.TipoEjercicio.Met * deportista.Peso * Convert.ToDecimal(e.IntervaloEjercicio.TotalHours) * Convert.ToDecimal(0.9), 2);
+            }
 
             //LUEGO ARMAMOS EL OBJETO DE SEGUNDO NIVEL CON LOS DATOS DEL EJERCICIO
             var vistaEjercicio = new VistaEjercicioFisico
@@ -195,7 +215,7 @@ public class EjerciciosFisicosController : Controller
                 EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString().ToUpper(),
                 EstadoEmocionalInicio = e.EstadoEmocionalInicio,
                 EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString().ToUpper(),
-
+                CaloriasQuemadas = caloriasQuemadas,
                 //ATENCIÓN A LA CONDICION PARA MOSTRAR O NO LA OBSERVACIÓN
                 Observaciones = String.IsNullOrEmpty(e.Observaciones) ? "" : e.Observaciones
             };
@@ -210,6 +230,7 @@ public class EjerciciosFisicosController : Controller
 
     public IActionResult EjerciciosPorLugar()
     {
+         var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
         // Crear una lista de SelectListItem que incluya el elemento adicional
         var selectListItems = new List<SelectListItem>
         {
@@ -230,7 +251,7 @@ public class EjerciciosFisicosController : Controller
         ViewBag.EstadoEmocionalInicio = selectListItems.OrderBy(t => t.Text).ToList();
         ViewBag.EstadoEmocionalFin = selectListItems.OrderBy(t => t.Text).ToList();
 
-        var lugares = _context.Lugares.ToList();
+        var lugares = _context.Lugares.Where(l => l.UsuarioID == usuarioLogueadoID).ToList();
         var lugaresBuscar = lugares.ToList();
 
         lugares.Add(new Lugar { LugarID = 0, Descripcion = "[SELECCIONE...]" });
@@ -244,11 +265,14 @@ public class EjerciciosFisicosController : Controller
 
     public JsonResult MostrarEjerciciosPorLugar(DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar)
     {
+          var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+
+          var deportista = _context.Deportistas.Where(d => d.UsuarioID == usuarioLogueadoID).Single();
         //INICIALIZAMOS EL LISTADO DE ELEMENTOS VACIOS
         List<VistaLugarEjercicios> tiposEjerciosMostrar = new List<VistaLugarEjercicios>();
 
         //BUSCAMOS EL LISTADO COMPLETO DE EJERCICIOS FISICOS
-        var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).Include(t => t.Lugar).ToList();
+        var ejerciciosFisicos = _context.EjerciciosFisicos.Where(e => e.UsuarioID == usuarioLogueadoID).Include(t => t.TipoEjercicio).Include(t => t.Lugar).ToList();
 
         //FILTRAMOS POR FECHA EN EL CASO DE QUE SEAN DISTINTOS DE NULO
         if (FechaDesdeBuscar != null && FechaHastaBuscar != null)
@@ -274,6 +298,14 @@ public class EjerciciosFisicosController : Controller
                 tiposEjerciosMostrar.Add(tipoEjercicioMostrar);
             }
 
+            decimal caloriasQuemadas = decimal.Round(e.TipoEjercicio.Met * deportista.Peso * Convert.ToDecimal(e.IntervaloEjercicio.TotalHours) * 1, 2);
+            if(deportista.Genero == Genero.Femenino){
+                caloriasQuemadas = decimal.Round(e.TipoEjercicio.Met * deportista.Peso * Convert.ToDecimal(e.IntervaloEjercicio.TotalHours) * Convert.ToDecimal(0.9), 2);
+            }
+
+            //Para calcular las calorías que se queman en un minuto, puedes usar la fórmula MET x 3,5 x (peso corporal en kg) ÷ 200
+            //decimal caloriasPorMinuto = decimal.Round(e.TipoEjercicio.Met * Convert.ToDecimal(3.5) * deportista.Peso / 200 , 2);
+            //caloriasQuemadas = decimal.Round(Convert.ToDecimal(e.IntervaloEjercicio.TotalMinutes) * caloriasPorMinuto , 2);
 
             //LUEGO ARMAMOS EL OBJETO DE SEGUNDO NIVEL CON LOS DATOS DEL EJERCICIO
             var vistaEjercicio = new VistaEjercicioFisico
@@ -290,7 +322,7 @@ public class EjerciciosFisicosController : Controller
                 EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString().ToUpper(),
                 EstadoEmocionalInicio = e.EstadoEmocionalInicio,
                 EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString().ToUpper(),
-
+                CaloriasQuemadas = caloriasQuemadas,
                 //ATENCIÓN A LA CONDICION PARA MOSTRAR O NO LA OBSERVACIÓN
                 Observaciones = String.IsNullOrEmpty(e.Observaciones) ? "" : e.Observaciones
             };
@@ -305,6 +337,7 @@ public class EjerciciosFisicosController : Controller
 
     public IActionResult Index()
     {
+         var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
         // Crear una lista de SelectListItem que incluya el elemento adicional
         var selectListItems = new List<SelectListItem>
         {
@@ -334,7 +367,7 @@ public class EjerciciosFisicosController : Controller
         tiposEjerciciosBuscar.Add(new TipoEjercicio { TipoEjercicioID = 0, Descripcion = "[TODOS]" });
         ViewBag.TipoEjercicioBuscarID = new SelectList(tiposEjerciciosBuscar.OrderBy(c => c.Descripcion), "TipoEjercicioID", "Descripcion");
 
-        var lugares = _context.Lugares.ToList();
+        var lugares = _context.Lugares.Where(l => l.UsuarioID == usuarioLogueadoID).ToList();
         var lugaresBuscar = lugares.ToList();
 
         lugares.Add(new Lugar { LugarID = 0, Descripcion = "[SELECCIONE...]" });
@@ -360,7 +393,10 @@ public class EjerciciosFisicosController : Controller
 
     public JsonResult GetEjerciciosFisicos(int? id, DateTime? FechaDesdeBuscar, DateTime? FechaHastaBuscar, int? TipoEjercicioBuscarID, int? LugarBuscarID)
     {
-        var ejerciciosFisicos = _context.EjerciciosFisicos.Include(t => t.TipoEjercicio).Include(t => t.Lugar).ToList();
+            var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+               var deportista = _context.Deportistas.Where(d => d.UsuarioID == usuarioLogueadoID).Single();
+
+        var ejerciciosFisicos = _context.EjerciciosFisicos.Where(e => e.UsuarioID == usuarioLogueadoID).Include(t => t.TipoEjercicio).Include(t => t.Lugar).ToList();
         if (id != null)
         {
             ejerciciosFisicos = ejerciciosFisicos.Where(t => t.EjercicioFisicoID == id).ToList();
@@ -383,6 +419,11 @@ public class EjerciciosFisicosController : Controller
 
         ejerciciosFisicos = ejerciciosFisicos.OrderByDescending(t => t.Inicio).ToList();
 
+        decimal valorBase = 1;
+        if(deportista.Genero == Genero.Femenino){
+            valorBase = Convert.ToDecimal(0.9);
+        }
+
         var ejercicioFisicosMostrar = ejerciciosFisicos
         .Select(e => new VistaEjercicioFisico
         {
@@ -395,10 +436,12 @@ public class EjerciciosFisicosController : Controller
             InicioString = e.Inicio.ToString("dd/MM/yyyy HH:mm"),
             Fin = e.Fin,
             FinString = e.Fin.ToString("dd/MM/yyyy HH:mm"),
+            IntervaloEjercicio = e.IntervaloEjercicio,
             EstadoEmocionalFin = e.EstadoEmocionalFin,
             EstadoEmocionalFinString = e.EstadoEmocionalFin.ToString().ToUpper(),
             EstadoEmocionalInicio = e.EstadoEmocionalInicio,
             EstadoEmocionalInicioString = e.EstadoEmocionalInicio.ToString().ToUpper(),
+            CaloriasQuemadas = decimal.Round(e.TipoEjercicio.Met * deportista.Peso * Convert.ToDecimal(e.IntervaloEjercicio.TotalHours) * valorBase, 2),
             Observaciones = e.Observaciones
         })
         .ToList();
@@ -409,6 +452,8 @@ public class EjerciciosFisicosController : Controller
 
     public JsonResult GuardarEjercicio(int ejercicioFisicoID, int tipoEjercicioID, int lugarID, int eventoID, EstadoEmocional estadoEmocionalInicio, EstadoEmocional estadoEmocionalFin, DateTime fechaInicio, DateTime fechaFin, string? observaciones)
     {
+         var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+         
         int error = 0;
 
         //VALIDAMOS QUE SELECCIONE TIPO DE EJERCICIO
@@ -432,7 +477,8 @@ public class EjerciciosFisicosController : Controller
                     Fin = fechaFin,
                     LugarID = lugarID,
                     EventoID = eventoID,
-                    Observaciones = observaciones
+                    Observaciones = observaciones,
+                    UsuarioID = usuarioLogueadoID
                 };
                 _context.Add(ejercicio);
                 _context.SaveChanges();

@@ -9,6 +9,7 @@ public class Lugar
     public int LugarID { get; set; }
     public string? Descripcion { get; set; } 
     public bool Eliminado { get; set; }
+    public string? UsuarioID { get; set; }  
     public virtual ICollection<EjercicioFisico> EjerciciosFisicos { get; set; } 
 }
 

@@ -14,24 +14,24 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private ApplicationDbContext _context;
-    // private readonly UserManager<IdentityUser> _userManager;
-    // private readonly RoleManager<IdentityRole> _rolManager;
+     private readonly UserManager<IdentityUser> _userManager;
+     private readonly RoleManager<IdentityRole> _rolManager;
 
     public HomeController(ILogger<HomeController> logger, ApplicationDbContext context
-    // , UserManager<IdentityUser> userManager, RoleManager<IdentityRole> rolManager
+     , UserManager<IdentityUser> userManager, RoleManager<IdentityRole> rolManager
     )
     {
         _logger = logger;
         _context = context;
-        // _userManager = userManager;
-        // _rolManager = rolManager;
+         _userManager = userManager;
+         _rolManager = rolManager;
     }
 
     [Authorize]
     public async Task<IActionResult> Index()
     {
         //BUSCAR EL ID DEL USUARIO LOGUEADO
-        //var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+        var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
         //OBJETO PARA PASARLO A VISTA PARA MOSTRAR QUE FUNCIONA
         ViewBag.UsuarioID = "";
 
@@ -45,6 +45,8 @@ public class HomeController : Controller
 
     public JsonResult PanelGraficos(int TipoEjercicioID, int Mes, int Anio)
     {
+              var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+
         PanelEjercicios panelEjercicios = new PanelEjercicios();
         panelEjercicios.EjerciciosPorDias = new List<EjerciciosPorDia>();
         panelEjercicios.VistaTipoEjercicioFisico = new List<VistaTipoEjercicioFisico>();
@@ -70,7 +72,7 @@ public class HomeController : Controller
         }
 
         //DEBEMOS BUSCAR EN BASE DE DATOS EN LA TABLA DE EJERCICIOS LOS EJERCICIOS QUE COINCIDAN CON EL MES Y AÑO INGRESADO
-        var ejerciciosMes = _context.EjerciciosFisicos.Where(e => e.Inicio.Month == Mes && e.Inicio.Year == Anio).ToList();
+        var ejerciciosMes = _context.EjerciciosFisicos.Where(e => e.Inicio.Month == Mes && e.Inicio.Year == Anio && e.UsuarioID == usuarioLogueadoID).ToList();
 
         var ejerciciosTipoEjercicio = ejerciciosMes.Where(e=>e.TipoEjercicioID == TipoEjercicioID).ToList();
 
@@ -96,7 +98,7 @@ public class HomeController : Controller
             //POR CADA TIPO DE EJERCICIO BUSQUEMOS EN LA TABLA DE EJERCICIOS FISICOS POR ESE TIPO, EN EL MES Y AÑO SOLICITADO
             var ejercicios = _context.EjerciciosFisicos
                                 .Where(s => s.TipoEjercicioID == tipoEjercicioFisico.TipoEjercicioID
-                                && s.Inicio.Month == Mes && s.Inicio.Year == Anio).ToList();
+                                && s.Inicio.Month == Mes && s.Inicio.Year == Anio && s.UsuarioID == usuarioLogueadoID).ToList();
 
             foreach (var ejercicio in ejercicios)
             {
@@ -124,6 +126,8 @@ public class HomeController : Controller
 
     public JsonResult GraficoTipoEjercicioMes(int TipoEjercicioID, int Mes, int Anio)
     {
+          var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+
         List<EjerciciosPorDia> ejerciciosPorDias = new List<EjerciciosPorDia>();
 
         //POR DEFECTO EN EL LISTADO AGREGAR TODOS LOS DIAS DEL MES PARA LUEGO RECORRER Y COMPLETAR EN BASE A LOS DIAS CON EJERCICIOS
@@ -147,7 +151,7 @@ public class HomeController : Controller
 
         //DEBEMOS BUSCAR EN BASE DE DATOS EN LA TABLA DE EJERCICIOS LOS EJERCICIOS QUE COINCIDAN CON LOS PARAMETROS INGRESADOS
         var ejercicios = _context.EjerciciosFisicos.Where(e => e.TipoEjercicioID == TipoEjercicioID
-          && e.Inicio.Month == Mes && e.Inicio.Year == Anio).ToList();
+          && e.Inicio.Month == Mes && e.Inicio.Year == Anio && e.UsuarioID == usuarioLogueadoID).ToList();
 
         foreach (var ejercicio in ejercicios.OrderBy(e => e.Inicio))
         {
@@ -167,6 +171,8 @@ public class HomeController : Controller
 
     public JsonResult GraficoTortaTipoActividades(int Mes, int Anio)
     {
+         var usuarioLogueadoID = _userManager.GetUserId(HttpContext.User);
+
         //INICIALIZAMOS UN LISTADO DE TIPO DE EJERCICIOS
         var vistaTipoEjercicioFisico = new List<VistaTipoEjercicioFisico>();
 
@@ -179,7 +185,7 @@ public class HomeController : Controller
             //POR CADA TIPO DE EJERCICIO BUSQUEMOS EN LA TABLA DE EJERCICIOS FISICOS POR ESE TIPO, EN EL MES Y AÑO SOLICITADO
             var ejercicios = _context.EjerciciosFisicos
                                 .Where(s => s.TipoEjercicioID == tipoEjercicioFisico.TipoEjercicioID
-                                && s.Inicio.Month == Mes && s.Inicio.Year == Anio).ToList();
+                                && s.Inicio.Month == Mes && s.Inicio.Year == Anio && s.UsuarioID == usuarioLogueadoID).ToList();
 
             foreach (var ejercicio in ejercicios)
             {
@@ -208,23 +214,29 @@ public class HomeController : Controller
     {
             //CREAR ROLES SI NO EXISTEN
             var nombreRolCrearExiste = _context.Roles.Where(r => r.Name == "ADMINISTRADOR").SingleOrDefault();
-            // if (nombreRolCrearExiste == null)
-            // {
-            //     var roleResult = await _rolManager.CreateAsync(new IdentityRole("ADMINISTRADOR"));
-            // }
+            if (nombreRolCrearExiste == null)
+            {
+                var roleResult = await _rolManager.CreateAsync(new IdentityRole("ADMINISTRADOR"));
+            }
+
+              var deportistaRolCrearExiste = _context.Roles.Where(r => r.Name == "DEPORTISTA").SingleOrDefault();
+            if (deportistaRolCrearExiste == null)
+            {
+                var roleResult = await _rolManager.CreateAsync(new IdentityRole("DEPORTISTA"));
+            }
 
             //CREAR USUARIO PRINCIPAL
             bool creado = false;
             //BUSCAR POR MEDIO DE CORREO ELECTRONICO SI EXISTE EL USUARIO
             var usuario = _context.Users.Where(u => u.Email == "admin@sistema.com").SingleOrDefault();
-            // if (usuario == null)
-            // {
-            //     var user = new IdentityUser { UserName = "admin@sistema.com", Email = "admin@sistema.com" };
-            //     var result = await _userManager.CreateAsync(user, "password");
+            if (usuario == null)
+            {
+                var user = new IdentityUser { UserName = "admin@sistema.com", Email = "admin@sistema.com" };
+                var result = await _userManager.CreateAsync(user, "password");
 
-            //     await _userManager.AddToRoleAsync(user, "ADMINISTRADOR");
-            //     creado = result.Succeeded;
-            // }
+                await _userManager.AddToRoleAsync(user, "ADMINISTRADOR");
+                creado = result.Succeeded;
+            }
 
             //CODIGO PARA BUSCAR EL USUARIO EN CASO DE NECESITARLO
             var superusuario = _context.Users.Where(r => r.Email == "admin@sistema.com").SingleOrDefault();

@@ -4,6 +4,7 @@ using EzpeletaNetCore8.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EzpeletaNetCore8.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241031213934_TablaDeportista")]
+    partial class TablaDeportista
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,9 +88,6 @@ namespace EzpeletaNetCore8.Migrations
                     b.Property<int>("TipoEjercicioID")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsuarioID")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("EjercicioFisicoID");
 
                     b.HasIndex("LugarID");
@@ -130,9 +130,6 @@ namespace EzpeletaNetCore8.Migrations
                     b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
-                    b.Property<string>("UsuarioID")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("LugarID");
 
                     b.ToTable("Lugares");
@@ -151,9 +148,6 @@ namespace EzpeletaNetCore8.Migrations
 
                     b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
-
-                    b.Property<decimal?>("Met")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("TipoEjercicioID");
 

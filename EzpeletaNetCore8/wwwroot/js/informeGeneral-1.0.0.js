@@ -35,6 +35,7 @@ function ListadoEjercicios() {
                     <td class="text-center anchoCelda"></td>
                     <td class="anchoCelda"></td>
                     <td class="text-center anchoCelda"></td>
+                        <td class="text-center anchoCelda"></td>
                     <td class="anchoCelda"></td>
                     <td class="text-center anchoCelda anchoBotones"></td>
                     <td class="text-center anchoBotones"></td>
@@ -49,6 +50,7 @@ function ListadoEjercicios() {
                         <td class="anchoCelda"></td>   
                         <td class="text-center anchoCelda"></td>
                         <td class="text-center anchoCelda"></td>
+                              <td class="text-center anchoCelda"></td>
                         <td class="text-center anchoCelda"></td>
                         <td class="anchoCelda"></td>                  
                         <td class="anchoCelda"></td>
@@ -65,6 +67,7 @@ function ListadoEjercicios() {
                         <td class="anchoCelda">${tipoEjercicioN3.descripcion}</td>              
                         <td class="text-center anchoCelda"></td>
                         <td class="text-center anchoCelda"></td>
+                           <td class="text-center anchoCelda"></td>
                         <td class="text-center anchoCelda"></td>
                         <td class="anchoCelda"></td>                  
                         <td class="anchoCelda"></td>
@@ -81,6 +84,7 @@ function ListadoEjercicios() {
                     <td class="text-center anchoCelda">${ejercicio.inicioString}</td>
                     <td class="text-center anchoCelda">${ejercicio.finString}</td>
                     <td class="text-center anchoCelda">${ejercicio.intervaloEjercicio}</td>
+                              <td style="text-align: right" class="anchoCelda">${ejercicio.caloriasQuemadas.toFixed(2)}</td>
                     <td class="anchoCelda">${ejercicio.estadoEmocionalInicioString}</td>                  
                     <td class="anchoCelda">${ejercicio.estadoEmocionalFinString}</td>
                     <td class="text-center anchoCelda anchoBotones">${ejercicio.observaciones}</td>

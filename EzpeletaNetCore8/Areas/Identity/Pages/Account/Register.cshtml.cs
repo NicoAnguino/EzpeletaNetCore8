@@ -10,6 +10,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using EzpeletaNetCore8.Data;
+using EzpeletaNetCore8.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -23,6 +25,7 @@ namespace EzpeletaNetCore8.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
+        private ApplicationDbContext _context;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserStore<IdentityUser> _userStore;
@@ -31,18 +34,21 @@ namespace EzpeletaNetCore8.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
+            ApplicationDbContext context,
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
+            _context = context;
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+
         }
 
         /// <summary>
@@ -106,7 +112,7 @@ namespace EzpeletaNetCore8.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string NombreCompleto, DateTime FechaNacimiento, Genero Genero, decimal Peso, decimal Altura, string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -120,29 +126,27 @@ namespace EzpeletaNetCore8.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    //SI EL REGISTRO FUE CORRECTO
+                    //DEBE ASIGNARLE EL ROL CORRESPONDIENTE
+                    await _userManager.AddToRoleAsync(user, "DEPORTISTA");
+
+                    //LUEGO DEBEMOS CREAR LA PERSONA GUARDANDO EL USUARIO ID REGISTRADO
+                    var deportista = new Deportista
+                    {
+                        NombreCompleto = NombreCompleto,
+                        FechaNacimiento = FechaNacimiento,
+                        Genero = Genero,
+                        Peso = Peso,
+                        Altura = Altura,
+                        UsuarioID = user.Id
+                    };
+                    _context.Deportistas.Add(deportista);
+                    _context.SaveChanges();
+
                     _logger.LogInformation("User created a new account with password.");
 
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
+                    return RedirectToAction("Index", "Home");
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
                 }
                 foreach (var error in result.Errors)
                 {

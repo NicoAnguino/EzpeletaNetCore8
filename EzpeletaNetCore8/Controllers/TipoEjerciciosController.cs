@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using EzpeletaNetCore8.Models;
 using EzpeletaNetCore8.Data;
 using Microsoft.AspNetCore.Authorization;
+using System.Globalization;
 
 namespace EzpeletaNetCore8.Controllers;
 
@@ -37,8 +38,16 @@ public class TipoEjerciciosController : Controller
         return Json(tipoDeEjercicios);
     }
 
-    public JsonResult GuardarTipoEjercicio(int tipoEjercicioID, string descripcion)
+    public JsonResult GuardarTipoEjercicio(int tipoEjercicioID, string descripcion, string met)
     {
+        //FIJAR INFORMACION DE CULTURA PARA FECHA Y DECIMALES
+        Thread.CurrentThread.CurrentCulture = new CultureInfo("es-AR");
+
+        if(!string.IsNullOrEmpty(met)){
+            met = met.Replace(".", ",");
+        }
+        Decimal metDecimal = new Decimal();
+        var validaMet = Decimal.TryParse(met, out metDecimal);
         //1- VERIFICAMOS SI REALMENTE INGRESO ALGUN CARACTER Y LA VARIABLE NO SEA NULL
         // if (descripcion != null && descripcion != "")
         // {
@@ -69,7 +78,8 @@ public class TipoEjerciciosController : Controller
                     //4- GUARDAR EL TIPO DE EJERCICIO
                     var tipoEjercicio = new TipoEjercicio
                     {
-                        Descripcion = descripcion
+                        Descripcion = descripcion,
+                        Met = metDecimal
                     };
                     _context.Add(tipoEjercicio);
                     _context.SaveChanges();
@@ -91,6 +101,7 @@ public class TipoEjerciciosController : Controller
                     {
                         //QUIERE DECIR QUE EL ELEMENTO EXISTE Y ES CORRECTO ENTONCES CONTINUAMOS CON EL EDITAR
                         tipoEjercicioEditar.Descripcion = descripcion;
+                        tipoEjercicioEditar.Met = metDecimal;
                         _context.SaveChanges();
                     }
                     else

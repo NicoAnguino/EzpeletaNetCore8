@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EzpeletaNetCore8.Data;
+using System.Globalization;
+
+//FIJAR INFORMACION DE CULTURA PARA FECHA Y DECIMALES
+Thread.CurrentThread.CurrentCulture = new CultureInfo("es-AR");
 
 var builder = WebApplication.CreateBuilder(args);
 
